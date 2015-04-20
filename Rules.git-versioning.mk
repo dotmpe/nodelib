@@ -48,6 +48,14 @@ check:
 
 patch: m :=
 patch:
+	@# reset pre-release tag
+	@./bin/cli-version.sh pre-release
+	@git add -u && git ci -m "$(strip $(m) $(APP_ID)/$$(./bin/cli-version.sh version))"
+	@git tag $(APP_ID)/$$(./bin/cli-version.sh version)
+	@./bin/cli-version.sh increment
+	@./tools/prep-version.sh
+
+old::
 	@git add -u && git ci -m "$(strip $(m) $(APP_ID)/$$(./bin/cli-version.sh version))"
 	@git tag $$(./bin/cli-version.sh version)
 	@./bin/cli-version.sh increment
