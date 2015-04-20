@@ -1,24 +1,29 @@
 {
-  "name": "git-versioning",
-  "version": "0.0.6-master",
-  "description": "Shell hooks and util for GIT versioning",
-  "main": "package.yaml",
-  "scripts": {
-    "test": "make test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dotmpe/git-versioning"
-  },
+  "name": "node-nodelib",
+  "version": "0.0.1",
+  "description": "",
+  "homepage": "https://github.com/dotmpe/nodelib",
+  "author": "",
   "keywords": [
     "GIT",
-    "Shell",
-    "Versioning"
   ],
-  "author": "B. van Berkum",
   "license": "GPLv3",
-  "bugs": {
-    "url": "https://github.com/dotmpe/git-versioning/issues"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dotmpe/nodelib.git"
   },
-  "homepage": "https://github.com/dotmpe/git-versioning"
+  "bugs": {
+    "url": "https://github.com/dotmpe/nodelib/issues"
+  },
+  "main": "src/node/index.coffee",
+  "bin": {
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "srctree": "tree -I 'node_modules|build|components'",
+    "srcloc": "find bin/ src | grep -v '^\\s*$' | wc -l"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.9.2"
+  }
 }
