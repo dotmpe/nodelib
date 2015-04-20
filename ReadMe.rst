@@ -18,6 +18,10 @@ Nodelib
 
 Package contents
 ----------------
+src/
+  node/
+    index.coffee
+      ..
 
 .versioned-files.list
   - A plain text list of paths that have version tags embedded.
