@@ -7,7 +7,7 @@ See also dotmpe/invidia for an JS context (without dynamic inheritance?)
 _ = require 'lodash'
 
 
-version = '0.0.3' # nodelib
+version = '0.0.3-dev' # nodelib
 
 ctx_prop_spec = ( desc ) ->
   _.defaults desc,
