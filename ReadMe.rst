@@ -1,6 +1,6 @@
 Nodelib
 =======
-:Version: 0.0.2
+:Version: 0.0.2-dev
 :project:
 
   .. image:: https://secure.travis-ci.org/dotmpe/nodelib.png
