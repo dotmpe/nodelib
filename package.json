@@ -1,6 +1,6 @@
 {
   "name": "nodelib",
-  "version": "0.0.3-dev",
+  "version": "0.0.4-dev",
   "description": "",
   "homepage": "https://github.com/dotmpe/nodelib",
   "author": "",
@@ -35,6 +35,8 @@
     "load-grunt-tasks": "latest"
   },
   "dependencies": {
-    "lodash": "^3.7.0"
+    "js-yaml": "^3.2.7",
+    "lodash": "^3.7.0",
+    "node-uuid": "^1.4.3"
   }
 }

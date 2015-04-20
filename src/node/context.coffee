@@ -2,12 +2,10 @@
 A coffeescript implementation of a context
 with inheritance and override.
 
-See also dotmpe/invidia for an JS context (without dynamic inheritance?)
+See also dotmpe/invidia for JS 
 ###
 _ = require 'lodash'
 
-
-version = '0.0.3-dev' # nodelib
 
 ctx_prop_spec = ( desc ) ->
   _.defaults desc,
@@ -172,7 +170,6 @@ class Context
 # Class vars
 Context.reset()
 Context.name = "context-mpe"
-Context.version = version
 
 
 module.exports = Context
