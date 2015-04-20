@@ -1,6 +1,6 @@
 Nodelib
 =======
-:Version: 0.0.1
+:Version: 0.0.1-dev
 :project:
 
   .. image:: https://secure.travis-ci.org/dotmpe/nodelib.png
@@ -58,4 +58,5 @@ Makefile
 
 .. [#] `Semantic Versioning 2.0.0`__
 .. _sitefile: http://github.com/dotmpe/node-sitefile
+
 
