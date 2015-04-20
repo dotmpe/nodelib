@@ -1,14 +1,14 @@
-main: nodelib/0.0.1-dev
+main: nodelib/0.0.2
 
 - type: application/x-project-mpe
-  id: nodelib/0.0.1-dev
+  id: nodelib/0.0.2
 
 # Id: git-versioning/0.0.8-master package.yaml
 # Start
 
 - type: application/x-project-mpe
   id: git-versioning
-  version: 0.0.1-dev
+  version: 0.0.8-master
   environments: [ 'development' ]
 
 # End
