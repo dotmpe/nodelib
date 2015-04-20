@@ -26,14 +26,15 @@ Package contents
 lib/git-versioning.sh
   - Shell script functions library.
 
+bin/
+  cli-version.sh
+    - Command-line facade for lib/git-versioning functions.
+
 tools/
   pre-commit.sh
     - GIT pre-commit hook Shell script.
     - Updates embedded metadata and add modified files to GIT staging area.
       FIXME: if triggered, need a trigger
-
-  cli-version.sh
-    - Command-line facade for lib/git-versioning functions.
 
   version-check.sh
     - Default check greps all metadata files to verify versions all match.
