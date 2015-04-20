@@ -1,7 +1,8 @@
-main: nodelib/0.0.2
+main: nodelib
 
 - type: application/x-project-mpe
-  id: nodelib/0.0.2
+  version:
+  id: nodelib
 
 
 # Id: git-versioning/0.0.12 package.yaml

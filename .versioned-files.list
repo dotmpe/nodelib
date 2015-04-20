@@ -2,4 +2,7 @@ ReadMe.rst
 package.json
 package.yaml
 src/node/index.coffee
+src/node/context.coffee
 Makefile
+test/jasmine/context.coffee
+Gruntfile.js

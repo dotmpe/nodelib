@@ -1,6 +1,6 @@
 Nodelib
 =======
-:Version: 0.0.2-dev
+:Version: 0.0.3
 :project:
 
   .. image:: https://secure.travis-ci.org/dotmpe/nodelib.png
@@ -20,8 +20,14 @@ Package contents
 ----------------
 src/
   node/
+    context.coffee
+      A context object to hold properties and create sub-contexts.
     index.coffee
       ..
+
+test/
+  jasmine/
+    Jasmine tests for ``src/``.
 
 .versioned-files.list
   - A plain text list of paths that have version tags embedded.
