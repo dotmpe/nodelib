@@ -29,8 +29,8 @@
     "grunt-coffeelint": "latest",
     "grunt-contrib-coffee": "latest",
     "grunt-contrib-jshint": "latest",
-    "grunt-jasmine-node-coffee": "^0.1.4",
-    "grunt-yamllint": "^0.2.0",
+    "grunt-jasmine-node-coffee": "latest",
+    "grunt-yamllint": "latest",
     "load-grunt-config": "latest",
     "load-grunt-tasks": "latest"
   },
