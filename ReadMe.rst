@@ -15,7 +15,6 @@ Nodelib
 
 
 
-
 Package contents
 ----------------
 src/
@@ -67,8 +66,6 @@ Makefile
 
 ----
 
-.. [#] `Semantic Versioning 2.0.0`__
 .. _sitefile: http://github.com/dotmpe/node-sitefile
-
 
 
