@@ -1,7 +1,7 @@
 main: nodelib
 
 - type: application/x-project-mpe
-  version: 0.0.4-dev+20150422 # nodelib
+  version: 0.0.4 # nodelib
   id: nodelib
   name: nodelib
 
