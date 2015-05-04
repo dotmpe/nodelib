@@ -1,7 +1,7 @@
 Nodelib
 =======
-:Version: 0.0.4-dev
-:Status: dev
+:Version: 0.0.5-dev+20150430-2225
+:Status: Development
 :project:
 
   .. image:: https://secure.travis-ci.org/dotmpe/nodelib.png

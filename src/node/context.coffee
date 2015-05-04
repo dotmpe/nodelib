@@ -6,6 +6,8 @@ See also dotmpe/invidia for JS
 ###
 _ = require 'lodash'
 
+error = require './error'
+
 
 ctx_prop_spec = ( desc ) ->
   _.defaults desc,
@@ -93,12 +95,12 @@ class Context
       if name of c
         c = c[ name ]
       else
-        throw new Error "Unable to resolve #{name} of #{path}"
+        throw new error.NonExistantPathElementException "Unable to get #{name} of #{path}"
     c
 
   # get an object by json path reference,
   # and resolve all contained references too
-  resolve: ( path ) ->
+  resolve: ( path, defaultValue ) ->
     p = path.split '.'
     c = @
 
@@ -106,7 +108,12 @@ class Context
 
       if '$ref' of c
         lc = c
-        c = @get refToPath c.$ref
+        try
+          c = @get refToPath c.$ref
+        catch error
+          if defaultValue?
+            return defaultValue
+          throw error
         if _.isPlainObject c
           delete lc.$ref
           _.merge lc, c
@@ -118,7 +125,12 @@ class Context
 
         if _.isObject( c ) and '$ref' of c
           lc = c
-          c = @get refToPath c.$ref
+          try
+            c = @get refToPath c.$ref
+          catch error
+            if defaultValue?
+              return defaultValue
+            throw error
           if _.isPlainObject c
             delete lc.$ref
             c = _.merge lc, c
@@ -170,7 +182,6 @@ class Context
 # Class vars
 Context.reset()
 Context.name = "context-mpe"
-
 
 module.exports = Context
 
