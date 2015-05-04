@@ -2,7 +2,7 @@
 A coffeescript implementation of a context
 with inheritance and override.
 
-See also dotmpe/invidia for JS 
+See also dotmpe/invidia for JS
 ###
 _ = require 'lodash'
 
@@ -95,7 +95,8 @@ class Context
       if name of c
         c = c[ name ]
       else
-        throw new error.NonExistantPathElementException "Unable to get #{name} of #{path}"
+        throw new error.NonExistantPathElementException \
+          "Unable to get #{name} of #{path}"
     c
 
   # get an object by json path reference,
@@ -152,7 +153,7 @@ class Context
         for item, index in value
           merge value, item, index
       else if _.isPlainObject value
-        if '$ref' of value 
+        if '$ref' of value
           merged = self.merge self.get refToPath value.$ref
           delete value.$ref
           value = _.merge value, merged

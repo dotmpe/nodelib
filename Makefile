@@ -82,6 +82,8 @@ build:: $(TRGT)
 
 install:: $(INSTALL)
 
+test:: $(TEST)
+
 clean:: .
 	rm -rf $(CLN)
 

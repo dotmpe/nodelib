@@ -5,6 +5,7 @@ Metadata to Express helpers.
 _ = require 'lodash'
 
 
+
 # XXX Init one-off controller instance to handle str-spec callback..
 resolveHandler = (module, cb) ->
   [ type, name ] = cb.substr( 0, cb.length - 1 ).split('(')

@@ -6,8 +6,8 @@ include $(DIR)/Rules.git-versioning.shared.mk
 STRGT += \
    usage \
    install \
-   test \
    update \
+   nodelib-test \
    build
 
 DEFAULT := usage
@@ -20,9 +20,11 @@ usage:
 
 install::
 	npm install
-	make test
 
-test: check
+nodelib-test:
+	grunt lint test
+
+TEST += nodelib-test
 
 update:
 	./bin/cli-version.sh update

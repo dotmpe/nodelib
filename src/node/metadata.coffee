@@ -12,9 +12,11 @@ Want some centralized or integrated storage (xattr, ldap)?
 path = require 'path'
 fs = require 'fs'
 yaml = require 'js-yaml'
+chalk = require 'chalk'
 _ = require 'lodash'
 
 codelib = require './code'
+
 
 
 typeIsArray = Array.isArray ||
@@ -30,7 +32,7 @@ loadDir = ( from_path ) ->
     if fs.existsSync metap
       return yaml.safeLoad fs.readFileSync metap, 'utf8'
 
-load = ( from_path, type )->
+load = ( from_path, type ) ->
   md = loadDir from_path
   if _.isEmpty md
     return
@@ -87,7 +89,7 @@ module.exports =
   loadDir: loadDir
   load: load
   resolve_mvc_meta: resolve_mvc_meta
-  readJrcModDef: ( md, name )->
+  readJrcModDef: ( md, name ) ->
     from_file = path.join md.dir
     data = fs.readFileSync from_file, 'ascii'
     mdef = parseJrcHeader data
@@ -96,7 +98,7 @@ module.exports =
       deps: null
       title: null
       description: null
-  parseJrcHeader: ( str )->
+  parseJrcHeader: ( str ) ->
     header = codelib.firstComment str
     m = {}
     for head in header
@@ -122,4 +124,72 @@ module.exports =
       if key == 'title'
         m.title = argstr.trim()
     m
+
+
+
+class AbstractGeneric
+
+  constructor: ( @data, defaults ) ->
+    @defaults = _.defaults defaults,
+      name: 'Generic metadata'
+      handlers: []
+
+  meta: ->
+    _.defaults @data, @defaults
+
+  info: ->
+    meta = @meta()
+    console.log chalk.yellow('---')
+    console.log chalk.blue('Path')+':', chalk.green( meta.path )
+    console.log chalk.blue('Name')+':', chalk.green( meta.name )
+    console.log chalk.blue('Handlers')+':', chalk.green( meta.handlers.join ',' )
+    console.log chalk.yellow('...')
+
+  canDo: ( action_name ) ->
+    meta = @meta()
+    meta.handlers.hasOwnProperty action_name
+
+  run: ->
+    if @canDo 'run'
+      @perform 'run'
+
+  test: ->
+    if @canDo 'test'
+      @perform 'test'
+
+
+class JSONGeneric extends AbstractGeneric
+
+  "Any value, usually List or Dict style"
+
+  @load: ( from_path ) ->
+    relative = './' + path.relative __dirname, from_path
+    new this require( relative ), path: from_path
+
+
+class YAMLGeneric extends AbstractGeneric
+
+  "Any value, usually List or Dict style"
+
+  @load: ( from_path ) ->
+    data = yaml.safeLoad fs.readFileSync from_path, 'utf8'
+    new this data, path: from_path
+
+
+class RstEmbeddedDict extends AbstractGeneric
+  "A dict from the docinfo if present"
+
+class PropertiesDict
+  "A dict with properties"
+
+class INIDict
+  "A dict from sections and embedded properties"
+
+
+module.exports.types =
+  JSONGeneric: JSONGeneric
+  YAMLGeneric: YAMLGeneric
+  RstEmbeddedDict: RstEmbeddedDict
+  PropertiesDict: PropertiesDict
+  INIDict: INIDict
 

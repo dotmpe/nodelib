@@ -21,7 +21,7 @@ module.exports = function(grunt) {
       },
       app: [
         'bin/*.coffee',
-        'lib/**/*.coffee',
+        'src/**/*.coffee',
         'config/**/*.coffee'
       ]
     },

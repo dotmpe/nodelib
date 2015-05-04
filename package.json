@@ -26,7 +26,10 @@
     "dep-local-all": "find node_modules/ -iname node_modules | xargs /bin/ls -w1 | grep -v '^$' | grep -v 'node_modules' | sort -u | awk '{print $1}'"
   },
   "devDependencies": {
+    "balanced-match": "^0.2.0",
+    "chalk": "^1.0.0",
     "coffee-script": "^1.9.2",
+    "concat-map": "0.0.1",
     "grunt": "latest",
     "grunt-cli": "latest",
     "grunt-coffeelint": "latest",
@@ -35,7 +38,8 @@
     "grunt-jasmine-node-coffee": "latest",
     "grunt-yamllint": "latest",
     "load-grunt-config": "latest",
-    "load-grunt-tasks": "latest"
+    "load-grunt-tasks": "latest",
+    "minimatch": "^2.0.7"
   },
   "dependencies": {
     "js-yaml": "^3.2.7",

@@ -1,5 +1,6 @@
 Nodelib
 =======
+.. Id: nodelib
 :Version: 0.0.5-dev+20150430-2225
 :Status: Development
 :project:

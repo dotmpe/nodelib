@@ -1,4 +1,5 @@
 # Id: git-versioning/0.0.16-dev+20150430-2153 Rules.git-versioning.shared.mk
+
 # special rule targets
 STRGT += \
    version \
@@ -12,6 +13,8 @@ version:
 check:
 	@$(echo) -n "Checking for $(APP_ID) version "
 	@./bin/cli-version.sh check
+
+TEST += check
 
 patch:
 	@./bin/cli-version.sh increment

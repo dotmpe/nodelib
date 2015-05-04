@@ -1,4 +1,7 @@
 ###
+#
+#
+#
 
 .mpe 2015 Some code to quickly start an extensible Express app.
 
@@ -14,6 +17,8 @@ uuid = require 'node-uuid'
 
 metadata = require './metadata'
 applyRoutes = require('./route').applyRoutes
+
+
 
 applyParams = ( app, context ) ->
   if context.params

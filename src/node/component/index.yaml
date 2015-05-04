@@ -1,0 +1,19 @@
+json:
+  package.json: npm
+  bower.json: npm
+
+yaml:
+  package.yaml: mpe
+  module.meta: mpe
+  module.yaml: mpe
+
+rst:
+  '*': rst_docinfo
+
+Makefile:
+  Makefile: makefile
+
+mk:
+  '*': makefile
+
+
