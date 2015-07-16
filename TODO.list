@@ -1,4 +1,11 @@
-Makefile:# XXX: GIT publish
-lib/git-versioning.sh:  # XXX Expect rSt MAIN_DOC
-ReadMe.rst:TODO: some integration with GIT frontend
-ReadMe.rst:      FIXME: if triggered, need a trigger
+bin//cli-pack.coffee:    continue # TODO
+src//node/context.coffee:    # XXX this starts top-down, but forgets context. may need to globalize
+src//node/metadata.coffee:# TODO: metafile should support various directory formats
+src//node/module.coffee:    # FIXME
+src//node/module.coffee:  | XXX what to use for models?
+src//node/module.coffee:    # TODO sync with Module.load:
+src//node/route.coffee:# XXX Init one-off controller instance to handle str-spec callback..
+tools//post-commit-old.sh:# FIXME
+tools//pre-commit.sh:# FIXME source $V_TOP_PATH/lib/git-versioning.sh
+tools//pre-commit.sh:# XXX again rSt hardcoded
+tools//version-check.sh:  # XXX: should want to know if any mismatches, regardless wether one matches
