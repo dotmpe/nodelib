@@ -8,7 +8,7 @@
 V_TOP_PATH=$(git rev-parse --show-toplevel)
 
 # FIXME source $V_TOP_PATH/lib/git-versioning.sh
-source ./lib/git-versioning.sh
+source /usr/local/share/git-versioning/lib/git-versioning.sh
 
 [ ! -e "$V_DOC_LIST" ] && {
   exit 1
