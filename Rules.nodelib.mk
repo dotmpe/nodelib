@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.5-dev+20150430-2225 Rules.nodelib.mk
+# Id: nodelib/0.0.5-dev+20150717-0000 Rules.nodelib.mk
 
 include $(DIR)/Rules.git-versioning.shared.mk
 
@@ -30,7 +30,7 @@ update:
 
 build:: TODO.list
 
-TODO.list: Makefile lib ReadMe.rst reader.rst package.yaml Sitefile.yaml
+TODO.list: Makefile bin/ lib/ src/ test/ tools/ ReadMe.rst reader.rst package.yaml Sitefile.yaml
 	grep -srI 'TODO\|FIXME\|XXX' $^ | grep -v 'grep..srI..TODO' | grep -v 'TODO.list' > $@
 
 
