@@ -1,7 +1,6 @@
 Nodelib
 =======
-.. Id: nodelib
-:Version: 0.0.5-dev+20150430-2225
+:Version: 0.0.5-dev-f-component-metadata+20150716-2341
 :Status: Development
 :project:
 
@@ -45,7 +44,6 @@ tools/
   pre-commit.sh
     - GIT pre-commit hook Shell script.
     - Updates embedded metadata and add modified files to GIT staging area.
-      FIXME: if triggered, need a trigger
 
   version-check.sh
     - Default check greps all metadata files to verify versions all match.
