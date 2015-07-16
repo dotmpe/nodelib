@@ -11,6 +11,7 @@ path = require 'path'
 
 _ = require 'lodash'
 uuid = require 'node-uuid'
+Bookshelf = require 'bookshelf'
 
 metadata = require './metadata'
 applyRoutes = require('./route').applyRoutes
