@@ -55,10 +55,10 @@ class Component
       @app.set('knex.main', knex)
       #console.log(chalk.grey('Initialized main DB conn'))
     # FIXME
-    #Base = Bookshelf.initialize(knex)
-    #@modelbase = Bookshelf.session = Base
+    Base = Bookshelf.initialize(knex)
+    @modelbase = Bookshelf.session = Base
     # Prepare Bookshelf.{model,collection} registries
-    #Base.plugin 'registry'
+    Base.plugin 'registry'
 
 
   load_model: ( name ) ->
