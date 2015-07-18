@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.5-dev+20150430-2225 Rules.nodelib.mk
+# Id: nodelib/0.0.5-dev+20150718-1849 Rules.nodelib.mk
 
 include $(DIR)/Rules.git-versioning.shared.mk
 
