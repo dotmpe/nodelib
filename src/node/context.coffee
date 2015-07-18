@@ -101,46 +101,62 @@ class Context
   # get an object by json path reference,
   # and resolve all contained references too
   resolve: ( path, defaultValue ) ->
+
     p = path.split '.'
-    c = @
+    c = self = @
+
+    # resolve an object with $ref key
+    _deref = (o) ->
+      ls = o
+      rs = self.get refToPath o.$ref
+      if _.isPlainObject rs
+        _.merge ls, rs
+      rs
+
+    # replace current with referenced path
+    if '$ref' of c
+      try
+        c = _deref c
+      catch error
+        if defaultValue?
+          return defaultValue
+        throw error
 
     while p.length
 
-      if '$ref' of c
-        lc = c
-        try
-          c = @get refToPath c.$ref
-        catch error
-          if defaultValue?
-            return defaultValue
-          throw error
-        if _.isPlainObject c
-          delete lc.$ref
-          _.merge lc, c
-
+      # replace current with sub at next path element
       name = p.shift()
-
       if name of c
         c = c[ name ]
 
-        if _.isObject( c ) and '$ref' of c
-          lc = c
+        if not _.isPlainObject( c )
+          continue
+
+        if '$ref' of c
           try
-            c = @get refToPath c.$ref
+            c = _deref c
           catch error
             if defaultValue?
               return defaultValue
             throw error
-          if _.isPlainObject c
-            delete lc.$ref
-            c = _.merge lc, c
 
       else
+        console.log c
         throw new Error "Unable to resolve #{name} of #{path}"
 
     if _.isPlainObject c
-      return @merge c
+      return @_clean @merge c
 
+    @_clean c
+
+  _clean: ( c ) ->
+    for k, v of c
+      if _.isPlainObject v
+        v = _.clone v
+        if '$ref' of v
+          delete v.$ref
+        @_clean v
+        c = v
     c
 
   merge: ( c ) ->
@@ -154,7 +170,7 @@ class Context
       else if _.isPlainObject value
         if '$ref' of value 
           merged = self.merge self.get refToPath value.$ref
-          delete value.$ref
+          #delete value.$ref
           value = _.merge value, merged
         else
           for key2, value2 of value

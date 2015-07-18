@@ -21,6 +21,7 @@ applyParams = ( app, context ) ->
     for name, handler of context.params
       app.param( name, handler )
 
+
 class Component
 
   constructor: ( opts ) ->
@@ -33,6 +34,15 @@ class Component
 
   @load_config: ( name ) ->
     {}
+
+  configure: ->
+
+
+class Core extends Component
+
+  constructor: (opts) ->
+    super opts
+    @name = @name || 'core'
 
   configure: ->
     p = @root || @path
@@ -61,13 +71,6 @@ class Component
     # Prepare Bookshelf.{model,collection} registries
     Base.plugin 'registry'
 
-
-  load_model: ( name ) ->
-    if not @models[name]
-      modpath = path.join @modelPath, name
-      @models[name] = require(modpath).define(@modelbase)
-    @models[name]
-
   load_controllers: ->
     if ! @meta.controllers
       console.warn 'No controllers for component', @name
@@ -80,6 +83,12 @@ class Component
       @update_controller cs
 
     @apply_controllers()
+
+  load_model: ( name ) ->
+    if not @models[name]
+      modpath = path.join @modelPath, name
+      @models[name] = require(modpath).define(@modelbase)
+    @models[name]
 
   load_controller_names: ->
     p = @root || @path
@@ -98,7 +107,6 @@ class Component
       @update_controller updateObj
 
       console.log "Component: #{@name} loaded", ctrl, "controller"
-
 
   update_controller: ( updateObj ) ->
     #console.log @meta, updateObj
@@ -124,13 +132,6 @@ class Component
     if @meta.default_route
       defroute = path.join( @url, @meta.default_route )
       @app.all @url, @base.redirect(defroute)
-
-
-class Core extends Component
-
-  constructor: (opts) ->
-    super opts
-    @name = @name || 'core'
 
   # static init for core, relay app init to core module, then init
   @config: ( core_path ) ->
