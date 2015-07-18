@@ -18,7 +18,7 @@
   "main": "src/node/index.coffee",
   "bin": {},
   "scripts": {
-    "test": "grunt lint test",
+    "test": "grunt --force lint test",
     "src-tree": "tree -I 'node_modules|build|components'",
     "src-files": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' ",
     "src-loc": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' -not -path '*.log' | xargs cat | grep -v '^\\s*$' | wc -l | awk '{print $1}'",
