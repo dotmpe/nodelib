@@ -35,17 +35,6 @@ module.exports = function(grunt) {
       }
     },
 
-    //nodeunit: {
-    //  files: ['test/nodeunit/**/*.coffee'],
-    //},
-    jasmine_node: {
-      forceExit: true,
-      extensions: 'coffee',
-      projectRoot: 'test/jasmine/',
-      matchall: true,
-      specNameMatches: ''
-    },
-
     mochaTest: {
       test: {
         options: {
@@ -74,8 +63,7 @@ module.exports = function(grunt) {
       test: {
         files: '<%= jshint.test.src %>',
         tasks: [
-          'jshint:test',
-          'jasmine_node'
+          'test'
         ]
       },
     },
@@ -92,7 +80,6 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('test', [
-    //'jasmine_node',
     'mochaTest'
   ]);
 
