@@ -2,7 +2,7 @@
 A coffeescript implementation of a context
 with inheritance and override.
 
-See also dotmpe/invidia for JS 
+See also dotmpe/invidia for JS
 ###
 _ = require 'lodash'
 
@@ -95,7 +95,9 @@ class Context
       if name of c
         c = c[ name ]
       else
-        throw new error.NonExistantPathElementException "Unable to get #{name} of #{path}"
+        console.error "no #{name} of #{path} in", c
+        throw new error.NonExistantPathElementException(
+          "Unable to get #{name} of #{path}" )
     c
 
   # get an object by json path reference,
@@ -110,7 +112,7 @@ class Context
       ls = o
       rs = self.get refToPath o.$ref
       if _.isPlainObject rs
-        _.merge ls, rs
+        rs = _.merge ls, rs
       rs
 
     # replace current with referenced path
@@ -129,7 +131,8 @@ class Context
       if name of c
         c = c[ name ]
 
-        if not _.isPlainObject( c )
+        #if not _.isPlainObject( c )
+        if not _.isObject( c )
           continue
 
         if '$ref' of c
@@ -141,24 +144,26 @@ class Context
             throw error
 
       else
-        console.log c
+        console.error "no #{name} of #{path} in", c
         throw new Error "Unable to resolve #{name} of #{path}"
 
     if _.isPlainObject c
-      return @_clean @merge c
+      return @merge c
 
-    @_clean c
+    c
 
+  # XXX drop $ref from return value
   _clean: ( c ) ->
     for k, v of c
       if _.isPlainObject v
-        v = _.clone v
-        if '$ref' of v
-          delete v.$ref
-        @_clean v
-        c = v
+        w = _.clone v
+        if '$ref' of w
+          delete w.$ref
+        @_clean w
+        c[k] = w
     c
 
+  # recurive resolve
   merge: ( c ) ->
     self = @
     # recursively replace $ref: '..' with dereferenced value
@@ -168,18 +173,27 @@ class Context
         for item, index in value
           merge value, item, index
       else if _.isPlainObject value
-        if '$ref' of value 
-          merged = self.merge self.get refToPath value.$ref
-          #delete value.$ref
-          value = _.merge value, merged
+        if '$ref' of value
+          deref = self.get refToPath value.$ref
+          if _.isPlainObject deref
+            merged = self.merge deref
+            delete value.$ref
+            value = _.merge value, merged
+          else
+            value = deref
         else
           for key2, value2 of value
             merge value, value2, key2
+
       else if _.isString( value ) or _.isNumber( value ) or _.isBoolean( value )
         null
+
       else
         throw new Error "Unhandled value '#{value}'"
+
       result[ key ] = value
+
+      result
 
     _.transform c, merge
 

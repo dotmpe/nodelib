@@ -1,6 +1,6 @@
 {
   "name": "nodelib",
-  "version": "0.0.5-test+20150718-1851",
+  "version": "0.0.5-test+20150718-2033",
   "description": "",
   "homepage": "https://github.com/dotmpe/nodelib",
   "author": "",
@@ -33,7 +33,6 @@
     "grunt-coffeelint": "latest",
     "grunt-contrib-coffee": "latest",
     "grunt-contrib-jshint": "latest",
-    "grunt-jasmine-node-coffee": "latest",
     "grunt-mocha-test": "^0.12.7",
     "grunt-yamllint": "latest",
     "load-grunt-config": "latest",

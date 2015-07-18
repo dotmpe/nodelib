@@ -1,7 +1,7 @@
 # git-versioning main: nodelib
 
 - type: application/x-project-mpe
-  version: 0.0.5-test+20150718-1851 # nodelib
+  version: 0.0.5-test+20150718-2033 # nodelib
   id: nodelib
   name: nodelib
 

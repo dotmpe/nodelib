@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.5-test+20150718-1851 Rules.nodelib.mk
+# Id: nodelib/0.0.5-test+20150718-2033 Rules.nodelib.mk
 
 include $(DIR)/Rules.git-versioning.shared.mk
 
@@ -22,7 +22,7 @@ install::
 STRGT += mocha
 mocha: X :=
 mocha:
-	mocha --compilers coffee:coffee-script/register test/mocha/ $(X)
+	mocha --check-leaks --compilers coffee:coffee-script/register test/mocha/ $(X)
 
 test:: check mocha
 
