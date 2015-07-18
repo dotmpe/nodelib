@@ -22,7 +22,7 @@ install::
 STRGT += mocha
 mocha: X :=
 mocha:
-	mocha --compilers coffee:coffee-script/register test/mocha/ $(X)
+	mocha --check-leaks --compilers coffee:coffee-script/register test/mocha/ $(X)
 
 test:: check mocha
 

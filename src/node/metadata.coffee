@@ -30,7 +30,7 @@ loadDir = ( from_path ) ->
     if fs.existsSync metap
       return yaml.safeLoad fs.readFileSync metap, 'utf8'
 
-load = ( from_path, type )->
+load = ( from_path, type ) ->
   md = loadDir from_path
   if _.isEmpty md
     return
@@ -87,7 +87,7 @@ module.exports =
   loadDir: loadDir
   load: load
   resolve_mvc_meta: resolve_mvc_meta
-  readJrcModDef: ( md, name )->
+  readJrcModDef: ( md, name ) ->
     from_file = path.join md.dir
     data = fs.readFileSync from_file, 'ascii'
     mdef = parseJrcHeader data
@@ -96,7 +96,7 @@ module.exports =
       deps: null
       title: null
       description: null
-  parseJrcHeader: ( str )->
+  parseJrcHeader: ( str ) ->
     header = codelib.firstComment str
     m = {}
     for head in header

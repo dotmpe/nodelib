@@ -149,6 +149,7 @@ describe 'Nodelib context-module', ->
           expect( ctx.resolve 'foo.bar.x2' ).toEqual 1
 
         it 'to objects merged with reference objects (II)', ->
+
           ctx = new Context
             foo: bar:
               x:
@@ -198,21 +199,21 @@ describe 'Nodelib context-module', ->
               x3: 'test'
             x3: 'test'
 
-          #expect( ctx.resolve 'refs.x3' ).toEqual refs.x3
-          #expect( ctx.resolve 'refs.x2' ).toEqual refs.x2
-          #expect( ctx.resolve 'refs.x' ).toEqual refs.x
+          expect( ctx.resolve 'refs.x3' ).toEqual refs.x3
+          expect( ctx.resolve 'refs.x2' ).toEqual refs.x2
+          expect( ctx.resolve 'refs.x' ).toEqual refs.x
           expect( ctx.resolve 'foo' ).toEqual foo
-          #expect( ctx.resolve 'foo.bar' ).toEqual foo.bar
-          #expect( ctx.resolve 'foo.bar.el' ).toEqual foo.bar.el
-          #expect( ctx.resolve 'foo.bar.x2' ).toEqual foo.bar.x2
-          #expect( ctx.resolve 'foo.bar.x2.bool' ).toEqual foo.bar.x2.bool
-          #expect( ctx.resolve 'foo.bar.x2.int' ).toEqual foo.bar.x2.int
-          #expect( ctx.resolve 'foo.bar.x2.x3' ).toEqual foo.bar.x2.x3
-
+          expect( ctx.resolve 'foo.bar' ).toEqual foo.bar
+          expect( ctx.resolve 'foo.bar.el' ).toEqual foo.bar.el
+          expect( ctx.resolve 'foo.bar.x2' ).toEqual foo.bar.x2
+          expect( ctx.resolve 'foo.bar.x2.bool' ).toEqual foo.bar.x2.bool
+          expect( ctx.resolve 'foo.bar.x2.int' ).toEqual foo.bar.x2.int
+          expect( ctx.resolve 'foo.bar.x2.x3' ).toEqual foo.bar.x2.x3
 
 
   beforeEach ->
     Context.reset()
+
   afterEach ->
     delete ctx
 
