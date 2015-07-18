@@ -129,7 +129,8 @@ class Context
       if name of c
         c = c[ name ]
 
-        if not _.isPlainObject( c )
+        #if not _.isPlainObject( c )
+        if not _.isObject( c )
           continue
 
         if '$ref' of c
@@ -152,11 +153,11 @@ class Context
   _clean: ( c ) ->
     for k, v of c
       if _.isPlainObject v
-        v = _.clone v
-        if '$ref' of v
-          delete v.$ref
-        @_clean v
-        c = v
+        w = _.clone v
+        if '$ref' of w
+          delete w.$ref
+        @_clean w
+        c[k] = w
     c
 
   merge: ( c ) ->

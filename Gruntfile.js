@@ -51,7 +51,7 @@ module.exports = function(grunt) {
         options: {
           reporter: 'spec',
           require: 'coffee-script/register',
-          captureFile: 'results.txt',
+          captureFile: 'mocha.out',
           quiet: false,
           clearRequireCache: false
         },
