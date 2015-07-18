@@ -1,14 +1,20 @@
 Nodelib
 =======
-:Version: 0.0.5-dev+20150718-1849
+:Version: 0.0.5-dev+20150718-2044
 :Status: Development
-:project:
+:dependency status:
+
+  .. image:: https://gemnasium.com/dotmpe/nodelib.png
+     :target: https://gemnasium.com/dotmpe/nodelib
+     :alt: Dependencies
+
+:build status:
 
   .. image:: https://secure.travis-ci.org/dotmpe/nodelib.png
     :target: https://travis-ci.org/dotmpe/nodelib
     :alt: Build
 
-:repository:
+:latest version:
 
   .. image:: https://badge.fury.io/gh/dotmpe%2Fnodelib.png
     :target: http://badge.fury.io/gh/dotmpe%2Fnodelib
