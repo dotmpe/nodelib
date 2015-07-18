@@ -3,3 +3,5 @@ package.json
 package.yaml
 src/node/index.coffee
 Rules.nodelib.mk
+test/jasmine/context.coffee
+test/mocha/context.coffee

@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.5-dev+20150717-0005 Rules.nodelib.mk
+# Id: nodelib/0.0.5-dev+20150718-1835 Rules.nodelib.mk
 
 include $(DIR)/Rules.git-versioning.shared.mk
 
@@ -16,13 +16,18 @@ space := $(empty) $(empty)
 usage:
 	@echo 'usage:'
 	@echo '# npm [info|update|test]'
-	@echo '# make [$(subst $(space),|,$(STRGTS))]'
+	@echo '# make [$(subst $(space),|,$(STRGT))]'
 
 install::
 	npm install
 	make test
 
-test: check
+STRGT += mocha
+mocha: X :=
+mocha:
+	mocha --compilers coffee:coffee-script/register test/mocha/ $(X)
+
+test: check mocha
 
 update:
 	./bin/cli-version.sh update
