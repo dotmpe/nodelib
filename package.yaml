@@ -1,20 +1,20 @@
-main: nodelib
+# git-versioning main: nodelib
 
 - type: application/x-project-mpe
-  version: 0.0.5-dev+20150718-1836 # nodelib
+  version: 0.0.5-dev+20150718-1851 # nodelib
   id: nodelib
   name: nodelib
 
 
-# Id: git-versioning/0.0.16-dev+20150430-2153 package.yaml
+# Id: git-versioning/0.0.16-dev-master+20150504-0242 package.yaml
 # Start
 
 - type: application/x-project-mpe
   id: git-versioning
-  version: 0.0.16-dev+20150430-2153 # git-versioning
+  version: 0.0.16-dev-master+20150504-0242 # git-versioning
   environments: [ 'development' ]
 
 # End
-# Id: git-versioning/0.0.16-dev+20150430-2153 package.yaml
+# Id: git-versioning/0.0.16-dev-master+20150504-0242 package.yaml
 
 

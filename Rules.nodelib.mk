@@ -1,14 +1,11 @@
-# Id: nodelib/0.0.5-dev+20150718-1836 Rules.nodelib.mk
+# Id: nodelib/0.0.5-dev+20150718-1851 Rules.nodelib.mk
 
 include $(DIR)/Rules.git-versioning.shared.mk
 
 # special rule targets
 STRGT += \
    usage \
-   install \
-   test \
-   update \
-   build
+   update
 
 DEFAULT := usage
 empty :=
@@ -27,7 +24,7 @@ mocha: X :=
 mocha:
 	mocha --compilers coffee:coffee-script/register test/mocha/ $(X)
 
-test: check mocha
+test:: check mocha
 
 update:
 	./bin/cli-version.sh update
