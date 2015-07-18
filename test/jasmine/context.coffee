@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.5-dev+20150718-1856 test/jasmine/context.coffee
+# Id: nodelib/0.0.5-dev+20150718-2015 test/jasmine/context.coffee
 
 ###
 
@@ -70,7 +70,7 @@ describe 'Nodelib context-module', ->
       expect( ctx2.x ).toBe 9
 
 
-    describe 'get path-reference', ->
+    describe 'can handle path-references', ->
 
       describe 'which dereference', ->
 

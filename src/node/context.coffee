@@ -112,7 +112,7 @@ class Context
       ls = o
       rs = self.get refToPath o.$ref
       if _.isPlainObject rs
-        _.merge ls, rs
+        rs = _.merge ls, rs
       rs
 
     # replace current with referenced path

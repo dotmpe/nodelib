@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.5-dev+20150718-1856 test/mocha/context.coffee
+# Id: nodelib/0.0.5-dev+20150718-2015 test/mocha/context.coffee
 
 ###
 
@@ -17,6 +17,7 @@ expect = chai.expect
 describe 'Nodelib context-module', ->
 
   it 'exports a class called Context', ->
+
     expect( Context::constructor )
     expect( Context::constructor.name ).to.equal 'Context'
 
@@ -76,7 +77,7 @@ describe 'Nodelib context-module', ->
       expect( ctx2.hasOwnProperty 'x' ).to.equal true
       expect( ctx2.x ).to.equal 9
 
-    describe 'get path-reference', ->
+    describe 'can handle path-references', ->
 
       describe 'which dereference', ->
         it 'to objects', ->
