@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.5-dev+20150802-1455 test/mocha/context.coffee
+# Id: nodelib/0.0.5-dev+20150802-1547 test/mocha/context.coffee
 
 ###
 
@@ -10,7 +10,6 @@ Just inherit the properties and add subcontexts.
 
 Context = require '../../src/node/context'
 chai = require 'chai'
-#chai.should()
 expect = chai.expect
 
 
