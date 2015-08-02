@@ -219,7 +219,7 @@ class CoreV01 extends Core
       if not 'type' of mdc
         continue
       if mdc.type in CoreV01.SUPPORTED
-        CoreV01.load_from_metadata core_path, mdc
+        return CoreV01.load_from_metadata core_path, mdc
 
   @load_from_metadata: ( core_path, mdc ) ->
     # XXX sync with module.load
