@@ -35,6 +35,7 @@ class Component
     {}
 
   configure: ->
+    console.log "TODO component.configure", [ @name, @meta, @base, @path, @route ]
 
 
 class Core extends Component
@@ -180,7 +181,6 @@ class CoreV01 extends Core
     CoreV01.load_modules
   ###
   load_modules: ->
-    console.log 'load_modules', @config.modules
     modroot = path.join __noderoot, @config.src || 'src'
     mods = _.extend( [], @config.modules, @meta.modules )
     for modpath in mods
@@ -188,7 +188,8 @@ class CoreV01 extends Core
       mod = ModuleV01.load( @, fullpath )
       mod.configure()
       @modules[ mod.meta.name ] = mod
-      console.log 'loaded module', modpath, mod.meta.name
+      console.log 'Loaded module', modpath, mod.meta.name
+      console.log mod.route
 
   ###
     CoreV01.get_all_components
