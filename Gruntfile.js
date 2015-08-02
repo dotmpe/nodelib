@@ -21,16 +21,16 @@ module.exports = function(grunt) {
       },
       app: [
         'bin/*.coffee',
-        'lib/**/*.coffee',
         'src/**/*.coffee',
-        'config/**/*.coffee'
+        'test/**/*.coffee',
       ]
     },
 
     yamllint: {
       all: {
         src: [
-          'Sitefile.yaml'
+          'Sitefile.yaml',
+          '**/*.metadata'
         ]
       }
     },

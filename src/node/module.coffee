@@ -35,28 +35,8 @@ class Component
     {}
 
   configure: ->
-    console.log "TODO component.configure", [ @name, @meta, @base, @path, @route ]
-
-
-class Core extends Component
-
-  constructor: (opts) ->
-    super opts
-    @name = @name || 'core'
-
-  configure: ->
-    p = @root || @path
-
-    @name = @name || @meta.name
-
-    if not @controllerPath
-      @controllerPath = path.join p, 'controllers'
-    if not @modelPath
-      @modelPath = path.join p, 'models'
-    if not @viewPath
-      @viewPath = path.join p, 'views'
-
-    @load_models()
+    console.log "TODO component.configure", [
+      @name, @meta, @base, @path, @route ]
     @load_controllers()
 
   load_models: ->
@@ -82,8 +62,6 @@ class Core extends Component
       @load_controller_names()
     else if _.isObject( cs ) and not _.isEmpty cs
       @update_controller cs
-
-    @apply_controllers()
 
   load_model: ( name ) ->
     if not @models[name]
@@ -123,6 +101,29 @@ class Core extends Component
     if updateObj.route
       # keep routes at local module
       _.merge @route, updateObj.route
+
+
+class Core extends Component
+
+  constructor: (opts) ->
+    super opts
+    @name = @name || 'core'
+
+  configure: ->
+    p = @root || @path
+
+    @name = @name || @meta.name
+
+    if not @controllerPath
+      @controllerPath = path.join p, 'controllers'
+    if not @modelPath
+      @modelPath = path.join p, 'models'
+    if not @viewPath
+      @viewPath = path.join p, 'views'
+
+    @load_models()
+    @load_controllers()
+    @apply_controllers()
 
   apply_controllers: ->
     # pick of new routes from updateObj

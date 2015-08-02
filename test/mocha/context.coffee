@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.5-dev+20150802-1547 test/mocha/context.coffee
+# Id: nodelib/0.0.5-dev+20150802-1612 test/mocha/context.coffee
 
 ###
 
@@ -64,7 +64,8 @@ describe 'Nodelib context-module', ->
       # track subcontext ID
       expect( ctx2.id() ).to.equal 'ctx:1.2'
 
-    it 'should inherit property values, but not export values to the super context', ->
+    it "should inherit property values, but not export values to the super
+        context", ->
 
       ctx1 = new Context foo: 'bar'
       ctx2 = ctx1.getSub x: 9
@@ -125,7 +126,7 @@ describe 'Nodelib context-module', ->
 
         it 'to values on referenced objects', ->
 
-          ctx = new Context 
+          ctx = new Context
             foo: bar: $ref: '#/refs/x'
             refs: x: el: 'baz'
           expect( ctx.resolve 'foo.bar.el' ).to.equal 'baz'

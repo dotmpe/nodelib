@@ -2,7 +2,7 @@
 
 module.exports = ->
 
-	name: 'core'
+  name: 'core'
 
 
 
