@@ -132,7 +132,7 @@ class Core extends Component
     @name = @name || 'core'
 
   # static init for core, relay app init to core module, then init
-  @config: ( core_path ) ->
+  @config: ( md, core_path ) ->
     core_file = path.join __noderoot, core_path, 'main'
     core_seed_cb = require core_file
     # Return core opts
@@ -200,14 +200,32 @@ class CoreV01 extends Core
     @server.listen @app.get("port"), ->
       console.log "Express server listening on port " + self.app.get("port")
 
+  # Static
+
+  @DEFAULT_METADATA: [
+    type: 'express-mvc-core/0.2'
+  ]
+
+  @SUPPORTED: [ 'express-mvc-core/0.1', 'express-mvc-core/0.2' ]
+
   @load: ( core_path ) ->
-    # TODO sync with Module.load:
-    #md = metadata.load( core_path )
-    #if not md
-    #  md = type: 'express-mvc/0.1'
-    # static configuration
-    opts = Core.config( core_path )
-    new CoreV01( opts )
+    md = metadata.load core_path
+    if !md
+      console.warn "No metadata for core", core_path
+      md = CoreV01.DEFAULT_METADATA
+    for mdc in md
+      if not 'type' of mdc
+        continue
+      if mdc.type in CoreV01.SUPPORTED
+        CoreV01.load_from_metadata core_path, mdc
+
+  @load_from_metadata: ( core_path, mdc ) ->
+    # XXX sync with module.load
+    CoreClass = CoreV01
+    #md = metadata.resolve_mvc_meta core_path, mdc
+    #CoreClass = module_classes[ md.ext_version ]
+    opts = CoreClass.config [ mdc ], core_path
+    return new CoreClass opts
 
 
 class ModuleV01 extends Component
@@ -228,22 +246,32 @@ class ModuleV01 extends Component
       opts.name = 'ModuleV01'
     super opts
 
-  # Static methods
+  # Static
 
-  # Read module metadata from path, load MVC-ext-type modules
+  @DEFAULT_METADATA: [
+    type: 'express-mvc-ext/0.2'
+  ]
+
+  @SUPPORTED: [ 'express-mvc-ext/0.1', 'express-mvc-ext/0.2' ]
+
   @load: ( core, from_path ) ->
-    md = metadata.load( from_path )
+    md = metadata.load from_path
     if !md
-      console.warn "No module to load from", from_path
-      return
+      console.warn "No metadata for module", from_path
+      md = ModuleV01.DEFAULT_METADATA
     for mdc in md
-      if mdc.type in [ 'express-mvc-ext/0.1', 'express-mvc-ext/0.2' ]
-        md = metadata.resolve_mvc_meta from_path, mdc
-        if !md.controllers
-          console.error "Missing MVC meta for ", mdc
-        ModuleClass = module_classes[ md.ext_version ]
-        opts = ModuleClass.config( core, md, from_path )
-        return new ModuleClass( opts )
+      if not 'type' of mdc
+        continue
+      if mdc.type in ModuleV01.SUPPORTED
+        ModuleV01.load_from_metadata core, from_path, mdc
+
+  @load_from_metadata: ( core, from_path, mdc ) ->
+    md = metadata.resolve_mvc_meta from_path, mdc
+    if !md.controllers
+      console.error "Missing MVC meta for ", mdc
+    ModuleClass = module_classes[ md.ext_version ]
+    opts = ModuleClass.config core, md, from_path
+    return new ModuleClass opts
 
   @config: ( core, md, from_path ) ->
     meta: md || name: md.name
@@ -253,6 +281,7 @@ class ModuleV01 extends Component
     app: core.app
     base: core.base
     path: from_path
+
 
 module_classes = {
   '0.1': ModuleV01
