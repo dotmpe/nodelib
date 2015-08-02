@@ -265,7 +265,7 @@ class ModuleV01 extends Component
       if not 'type' of mdc
         continue
       if mdc.type in ModuleV01.SUPPORTED
-        ModuleV01.load_from_metadata core, from_path, mdc
+        return ModuleV01.load_from_metadata core, from_path, mdc
 
   @load_from_metadata: ( core, from_path, mdc ) ->
     md = metadata.resolve_mvc_meta from_path, mdc
