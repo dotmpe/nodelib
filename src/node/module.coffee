@@ -180,7 +180,7 @@ class CoreV01 extends Core
     CoreV01.load_modules
   ###
   load_modules: ->
-    #console.log 'load_modules', @config.modules
+    console.log 'load_modules', @config.modules
     modroot = path.join __noderoot, @config.src || 'src'
     mods = _.extend( [], @config.modules, @meta.modules )
     for modpath in mods
@@ -220,6 +220,7 @@ class CoreV01 extends Core
         continue
       if mdc.type in CoreV01.SUPPORTED
         return CoreV01.load_from_metadata core_path, mdc
+    throw new Error "No known core interface on module at #{core_path}"
 
   @load_from_metadata: ( core_path, mdc ) ->
     # XXX sync with module.load
@@ -266,6 +267,7 @@ class ModuleV01 extends Component
         continue
       if mdc.type in ModuleV01.SUPPORTED
         return ModuleV01.load_from_metadata core, from_path, mdc
+    throw new Error "No known extension interface on module at #{from_path}"
 
   @load_from_metadata: ( core, from_path, mdc ) ->
     md = metadata.resolve_mvc_meta from_path, mdc
