@@ -22,7 +22,7 @@ module.exports = function(grunt) {
       app: [
         'bin/*.coffee',
         'src/**/*.coffee',
-        'test/**/*.coffee',
+        'test/**/*.coffee'
       ]
     },
 
