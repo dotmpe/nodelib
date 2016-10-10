@@ -41,7 +41,7 @@ class Context
     #console.log @constructor.name
     #console.log @path
     #( @constructor.name +':'+ @path )
-    'Context:'+@path
+    'Context:'+@id
 
   isEmpty: ->
     not _.isEmpty @_data
@@ -63,6 +63,7 @@ class Context
   seed: ( obj ) ->
     for k, v of obj
       @_data[ k ] = v
+    @
 
   # Create local properties using keys in obj
   prepare_properties: ( obj ) ->
@@ -72,6 +73,7 @@ class Context
       @ctx_property k,
         get: @_ctxGetter( k )
         set: @_ctxSetter( k )
+    @
 
   subs: ->
     return @_subs
@@ -167,6 +169,14 @@ class Context
 
     _.transform c, merge
 
+  to_dict: ->
+    d = {}
+    _ctx = @
+    while _ctx
+      d = _.merge d, _ctx._data
+      _ctx = _ctx.context
+    d
+
   ctx_property: ( prop, desc ) ->
     ctx_prop_spec desc
     Object.defineProperty @, prop, desc
@@ -178,6 +188,7 @@ class Context
 
   @reset: ->
     Context._i = 0
+
 
 # Class vars
 Context.reset()

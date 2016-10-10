@@ -67,9 +67,6 @@ Sitefile.yaml
 reader.rst
   - For use with sitefile_
 
-Makefile
-  - Nothing much.
-
 
 ----
 
