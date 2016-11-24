@@ -18,6 +18,7 @@
   "main": "src/node/index.coffee",
   "bin": {},
   "scripts": {
+    "build": "node_modules/webpack/bin/webpack.js --config webpack.config.js",
     "test": "grunt lint test",
     "src-tree": "tree -I 'node_modules|build|components'",
     "src-files": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' ",
@@ -26,16 +27,19 @@
     "dep-local-all": "find node_modules/ -iname node_modules | xargs /bin/ls -w1 | grep -v '^$' | grep -v 'node_modules' | sort -u | awk '{print $1}'"
   },
   "devDependencies": {
-    "coffee-script": "^1.9.2",
-    "grunt": "latest",
-    "grunt-cli": "latest",
-    "grunt-coffeelint": "latest",
+    "coffee-script": "^1.11.1",
+    "grunt": "^0.4.5",
+    "grunt-cli": "^1.2.0",
+    "grunt-coffeelint": "^0.0.16",
     "grunt-contrib-coffee": "latest",
     "grunt-contrib-jshint": "latest",
+    "grunt-yamllint": "0.2.0",
     "grunt-jasmine-node-coffee": "latest",
-    "grunt-yamllint": "latest",
     "load-grunt-config": "latest",
-    "load-grunt-tasks": "latest"
+    "load-grunt-tasks": "latest",
+    "coffee-loader": "^0.7.2",
+    "json-loader": "latest",
+    "webpack": "^1.13.3"
   },
   "dependencies": {
     "js-yaml": "^3.2.7",
