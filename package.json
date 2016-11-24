@@ -38,8 +38,8 @@
     "load-grunt-config": "latest",
     "load-grunt-tasks": "latest",
     "coffee-loader": "^0.7.2",
-    "json-loader": "latest",
-    "webpack": "^1.13.3"
+    "webpack": "^1.13.3",
+    "source-map-support": "latest"
   },
   "dependencies": {
     "js-yaml": "^3.2.7",
