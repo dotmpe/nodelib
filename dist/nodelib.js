@@ -211,6 +211,7 @@ require("source-map-support").install();
 	      if (name in c) {
 	        c = c[name];
 	      } else {
+	        console.error("no " + name + " of " + path + " in", c);
 	        throw new error.NonExistantPathElementException("Unable to get " + name + " of " + path);
 	      }
 	    }
@@ -218,33 +219,39 @@ require("source-map-support").install();
 	  };
 	
 	  Context.prototype.resolve = function(path, defaultValue) {
-	    var c, lc, name, p;
+	    var _deref, c, name, p, self;
 	    p = path.split('.');
-	    c = this;
-	    while (p.length) {
-	      if ('$ref' in c) {
-	        lc = c;
-	        try {
-	          c = this.get(refToPath(c.$ref));
-	        } catch (error1) {
-	          error = error1;
-	          if (defaultValue != null) {
-	            return defaultValue;
-	          }
-	          throw error;
-	        }
-	        if (_.isPlainObject(c)) {
-	          delete lc.$ref;
-	          _.merge(lc, c);
-	        }
+	    c = self = this;
+	    _deref = function(o) {
+	      var ls, rs;
+	      ls = o;
+	      rs = self.get(refToPath(o.$ref));
+	      if (_.isPlainObject(rs)) {
+	        rs = _.merge(ls, rs);
 	      }
+	      return rs;
+	    };
+	    if ('$ref' in c) {
+	      try {
+	        c = _deref(c);
+	      } catch (error1) {
+	        error = error1;
+	        if (defaultValue != null) {
+	          return defaultValue;
+	        }
+	        throw error;
+	      }
+	    }
+	    while (p.length) {
 	      name = p.shift();
 	      if (name in c) {
 	        c = c[name];
-	        if (_.isObject(c) && '$ref' in c) {
-	          lc = c;
+	        if (!_.isObject(c)) {
+	          continue;
+	        }
+	        if ('$ref' in c) {
 	          try {
-	            c = this.get(refToPath(c.$ref));
+	            c = _deref(c);
 	          } catch (error1) {
 	            error = error1;
 	            if (defaultValue != null) {
@@ -252,12 +259,9 @@ require("source-map-support").install();
 	            }
 	            throw error;
 	          }
-	          if (_.isPlainObject(c)) {
-	            delete lc.$ref;
-	            c = _.merge(lc, c);
-	          }
 	        }
 	      } else {
+	        console.error("no " + name + " of " + path + " in", c);
 	        throw new Error("Unable to resolve " + name + " of " + path);
 	      }
 	    }
@@ -267,11 +271,27 @@ require("source-map-support").install();
 	    return c;
 	  };
 	
+	  Context.prototype._clean = function(c) {
+	    var k, v, w;
+	    for (k in c) {
+	      v = c[k];
+	      if (_.isPlainObject(v)) {
+	        w = _.clone(v);
+	        if ('$ref' in w) {
+	          delete w.$ref;
+	        }
+	        this._clean(w);
+	        c[k] = w;
+	      }
+	    }
+	    return c;
+	  };
+	
 	  Context.prototype.merge = function(c) {
 	    var merge, self;
 	    self = this;
 	    merge = function(result, value, key) {
-	      var i, index, item, key2, len, merged, value2;
+	      var deref, i, index, item, key2, len, merged, value2;
 	      if (_.isArray(value)) {
 	        for (index = i = 0, len = value.length; i < len; index = ++i) {
 	          item = value[index];
@@ -279,9 +299,14 @@ require("source-map-support").install();
 	        }
 	      } else if (_.isPlainObject(value)) {
 	        if ('$ref' in value) {
-	          merged = self.merge(self.get(refToPath(value.$ref)));
-	          delete value.$ref;
-	          value = _.merge(value, merged);
+	          deref = self.get(refToPath(value.$ref));
+	          if (_.isPlainObject(deref)) {
+	            merged = self.merge(deref);
+	            delete value.$ref;
+	            value = _.merge(value, merged);
+	          } else {
+	            value = deref;
+	          }
 	        } else {
 	          for (key2 in value) {
 	            value2 = value[key2];
@@ -293,7 +318,8 @@ require("source-map-support").install();
 	      } else {
 	        throw new Error("Unhandled value '" + value + "'");
 	      }
-	      return result[key] = value;
+	      result[key] = value;
+	      return result;
 	    };
 	    return _.transform(c, merge);
 	  };
@@ -675,31 +701,12 @@ require("source-map-support").install();
 	  };
 	
 	  Component.prototype.configure = function() {
-	    var p;
-	    p = this.root || this.path;
-	    this.name = this.name || this.meta.name;
-	    if (!this.controllerPath) {
-	      this.controllerPath = path.join(p, 'controllers');
-	    }
-	    if (!this.modelPath) {
-	      this.modelPath = path.join(p, 'models');
-	    }
-	    if (!this.viewPath) {
-	      this.viewPath = path.join(p, 'views');
-	    }
-	    this.load_models();
+	    console.log("TODO component.configure", [this.name, this.meta, this.base, this.path, this.route]);
 	    return this.load_controllers();
 	  };
 	
-	  Component.prototype.load_models = function() {};
-	
-	  Component.prototype.load_model = function(name) {
-	    var modpath;
-	    if (!this.models[name]) {
-	      modpath = path.join(this.modelPath, name);
-	      this.models[name] = __webpack_require__(15)(modpath).define(this.modelbase);
-	    }
-	    return this.models[name];
+	  Component.prototype.load_models = function() {
+	    return Base.plugin('registry');
 	  };
 	
 	  Component.prototype.load_controllers = function() {
@@ -710,11 +717,19 @@ require("source-map-support").install();
 	    }
 	    cs = this.meta.controllers;
 	    if (_.isArray(cs)) {
-	      this.load_controller_names();
+	      return this.load_controller_names();
 	    } else if (_.isObject(cs) && !_.isEmpty(cs)) {
-	      this.update_controller(cs);
+	      return this.update_controller(cs);
 	    }
-	    return this.apply_controllers();
+	  };
+	
+	  Component.prototype.load_model = function(name) {
+	    var modpath;
+	    if (!this.models[name]) {
+	      modpath = path.join(this.modelPath, name);
+	      this.models[name] = __webpack_require__(15)(modpath).define(this.modelbase);
+	    }
+	    return this.models[name];
 	  };
 	
 	  Component.prototype.load_controller_names = function() {
@@ -753,16 +768,6 @@ require("source-map-support").install();
 	    }
 	  };
 	
-	  Component.prototype.apply_controllers = function() {
-	    var defroute;
-	    _.extend(this.routes, applyRoutes(this.app, this.url, this));
-	    applyParams(this.app, this);
-	    if (this.meta.default_route) {
-	      defroute = path.join(this.url, this.meta.default_route);
-	      return this.app.all(this.url, this.base.redirect(defroute));
-	    }
-	  };
-	
 	  return Component;
 	
 	})();
@@ -774,6 +779,34 @@ require("source-map-support").install();
 	    Core.__super__.constructor.call(this, opts);
 	    this.name = this.name || 'core';
 	  }
+	
+	  Core.prototype.configure = function() {
+	    var p;
+	    p = this.root || this.path;
+	    this.name = this.name || this.meta.name;
+	    if (!this.controllerPath) {
+	      this.controllerPath = path.join(p, 'controllers');
+	    }
+	    if (!this.modelPath) {
+	      this.modelPath = path.join(p, 'models');
+	    }
+	    if (!this.viewPath) {
+	      this.viewPath = path.join(p, 'views');
+	    }
+	    this.load_models();
+	    this.load_controllers();
+	    return this.apply_controllers();
+	  };
+	
+	  Core.prototype.apply_controllers = function() {
+	    var defroute;
+	    _.extend(this.routes, applyRoutes(this.app, this.url, this));
+	    applyParams(this.app, this);
+	    if (this.meta.default_route) {
+	      defroute = path.join(this.url, this.meta.default_route);
+	      return this.app.all(this.url, this.base.redirect(defroute));
+	    }
+	  };
 	
 	  Core.config = function(md, core_path) {
 	    var core_file, core_seed_cb, opts;
@@ -838,7 +871,8 @@ require("source-map-support").install();
 	      mod = ModuleV01.load(this, fullpath);
 	      mod.configure();
 	      this.modules[mod.meta.name] = mod;
-	      results.push(console.log('loaded module', modpath, mod.meta.name));
+	      console.log('Loaded module', modpath, mod.meta.name);
+	      results.push(console.log(mod.route));
 	    }
 	    return results;
 	  };
@@ -871,25 +905,22 @@ require("source-map-support").install();
 	  CoreV01.SUPPORTED = ['express-mvc-core/0.1', 'express-mvc-core/0.2'];
 	
 	  CoreV01.load = function(core_path) {
-	    var i, len, md, mdc, ref, results;
+	    var i, len, md, mdc, ref;
 	    md = metadata.load(core_path);
 	    if (!md) {
 	      console.warn("No metadata for core", core_path);
 	      md = CoreV01.DEFAULT_METADATA;
 	    }
-	    results = [];
 	    for (i = 0, len = md.length; i < len; i++) {
 	      mdc = md[i];
 	      if (!'type' in mdc) {
 	        continue;
 	      }
 	      if (ref = mdc.type, indexOf.call(CoreV01.SUPPORTED, ref) >= 0) {
-	        results.push(CoreV01.load_from_metadata(core_path, mdc));
-	      } else {
-	        results.push(void 0);
+	        return CoreV01.load_from_metadata(core_path, mdc);
 	      }
 	    }
-	    return results;
+	    throw new Error("No known core interface on module at " + core_path);
 	  };
 	
 	  CoreV01.load_from_metadata = function(core_path, mdc) {
@@ -932,25 +963,22 @@ require("source-map-support").install();
 	  ModuleV01.SUPPORTED = ['express-mvc-ext/0.1', 'express-mvc-ext/0.2'];
 	
 	  ModuleV01.load = function(core, from_path) {
-	    var i, len, md, mdc, ref, results;
+	    var i, len, md, mdc, ref;
 	    md = metadata.load(from_path);
 	    if (!md) {
 	      console.warn("No metadata for module", from_path);
 	      md = ModuleV01.DEFAULT_METADATA;
 	    }
-	    results = [];
 	    for (i = 0, len = md.length; i < len; i++) {
 	      mdc = md[i];
 	      if (!'type' in mdc) {
 	        continue;
 	      }
 	      if (ref = mdc.type, indexOf.call(ModuleV01.SUPPORTED, ref) >= 0) {
-	        results.push(ModuleV01.load_from_metadata(core, from_path, mdc));
-	      } else {
-	        results.push(void 0);
+	        return ModuleV01.load_from_metadata(core, from_path, mdc);
 	      }
 	    }
-	    return results;
+	    throw new Error("No known extension interface on module at " + from_path);
 	  };
 	
 	  ModuleV01.load_from_metadata = function(core, from_path, mdc) {

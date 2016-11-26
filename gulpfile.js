@@ -35,7 +35,8 @@ var config = {
 			"", ".coffee", ".js"
 		]
 	},
-  devtool: 'sourcemap'
+  devtool: 'sourcemap',
+  libraryTarget: "commonjs2"
 }
 
 gulp.task('dist-build', function(done) {
