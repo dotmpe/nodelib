@@ -40,15 +40,14 @@ class Component
     @load_controllers()
 
   load_models: ->
-    knex = @app.get('knex.main')
-    if not knex
-      knex = require('knex')(@config.database.main)
-      @app.set('knex.main', knex)
-      #console.log(chalk.grey('Initialized main DB conn'))
-    # FIXME
-    Bookshelf = require 'bookshelf'
-    Base = Bookshelf.initialize(knex)
-    @modelbase = Bookshelf.session = Base
+    #knex = @app.get('knex.main')
+    #if not knex
+    #  knex = require('knex')(@config.database.main)
+    #  @app.set('knex.main', knex)
+    #  #console.log(chalk.grey('Initialized main DB conn'))
+    # FIXME Component.load_models
+    #Base = Bookshelf.initialize(knex)
+    #@modelbase = Bookshelf.session = Base
     # Prepare Bookshelf.{model,collection} registries
     Base.plugin 'registry'
 

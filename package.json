@@ -1,6 +1,6 @@
 {
   "name": "nodelib",
-  "version": "0.0.5-dev+20150802-1612",
+  "version": "0.0.5-dev+20161126-0155",
   "description": "Nodelib",
   "homepage": "https://github.com/dotmpe/nodelib",
   "author": "",
@@ -15,9 +15,10 @@
   "bugs": {
     "url": "https://github.com/dotmpe/nodelib/issues"
   },
-  "main": "src/node/index.coffee",
+  "main": "dist/nodelib.js",
   "bin": {},
   "scripts": {
+    "build": "gulp dist-build",
     "test": "grunt --force lint test",
     "src-tree": "tree -I 'node_modules|build|components'",
     "src-files": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' ",
@@ -25,23 +26,28 @@
     "dep-local": "echo node_modules/* | xargs basename | sort -u | awk '{print $1}'",
     "dep-local-all": "find node_modules/ -iname node_modules | xargs /bin/ls -w1 | grep -v '^$' | grep -v 'node_modules' | sort -u | awk '{print $1}'"
   },
+  "devDependencies": {
+    "chai": "^3.1.0",
+    "coffee-script": "^1.11.1",
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "^2.2.5"
+    "grunt": "^0.4.5",
+    "grunt-cli": "^1.2.0",
+    "grunt-coffeelint": "^0.0.16",
+    "grunt-contrib-coffee": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-yamllint": "0.2.0",
+    "grunt-jasmine-node-coffee": "latest",
+    "load-grunt-config": "latest",
+    "load-grunt-tasks": "latest",
+    "coffee-loader": "^0.7.2",
+    "webpack": "^1.13.3",
+    "source-map-support": "latest",
+    "gulp": "latest"
+  },
   "dependencies": {
     "js-yaml": "^3.2.7",
     "lodash": "^3.7.0",
     "node-uuid": "^1.4.3"
-  },
-  "devDependencies": {
-    "chai": "^3.1.0",
-    "coffee-script": "^1.9.2",
-    "grunt": "latest",
-    "grunt-cli": "latest",
-    "grunt-coffeelint": "latest",
-    "grunt-contrib-coffee": "latest",
-    "grunt-contrib-jshint": "latest",
-    "grunt-mocha-test": "^0.12.7",
-    "grunt-yamllint": "latest",
-    "load-grunt-config": "latest",
-    "load-grunt-tasks": "latest",
-    "mocha": "^2.2.5"
   }
 }
