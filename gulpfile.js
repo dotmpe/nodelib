@@ -17,6 +17,8 @@ var config = {
   target: 'node',
   output: {
     path: path.join(__dirname, 'dist'),
+    library: "nodelib",
+    libraryTarget: "commonjs2",
     filename: 'nodelib.js'
   },
   module: {
@@ -36,7 +38,6 @@ var config = {
 		]
 	},
   devtool: 'sourcemap',
-  libraryTarget: "commonjs2"
 }
 
 gulp.task('dist-build', function(done) {
