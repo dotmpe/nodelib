@@ -1,6 +1,6 @@
 {
   "name": "nodelib",
-  "version": "0.0.5-dev+20150802-1427",
+  "version": "0.0.5-dev+20161126-0155",
   "description": "",
   "homepage": "https://github.com/dotmpe/nodelib",
   "author": "",
@@ -15,10 +15,10 @@
   "bugs": {
     "url": "https://github.com/dotmpe/nodelib/issues"
   },
-  "main": "src/node/index.coffee",
+  "main": "dist/nodelib.js",
   "bin": {},
   "scripts": {
-    "build": "node_modules/webpack/bin/webpack.js --config webpack.config.js",
+    "build": "gulp dist-build",
     "test": "grunt lint test",
     "src-tree": "tree -I 'node_modules|build|components'",
     "src-files": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' ",
@@ -39,7 +39,8 @@
     "load-grunt-tasks": "latest",
     "coffee-loader": "^0.7.2",
     "webpack": "^1.13.3",
-    "source-map-support": "latest"
+    "source-map-support": "latest",
+    "gulp": "latest"
   },
   "dependencies": {
     "js-yaml": "^3.2.7",

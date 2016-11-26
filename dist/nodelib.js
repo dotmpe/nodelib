@@ -1,0 +1,1260 @@
+require("source-map-support").install();
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+/******/
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(1);
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var version;
+	
+	version = "0.0.5-dev+20161126-0155";
+	
+	module.exports = {
+	  Context: __webpack_require__(2),
+	  metadata: __webpack_require__(5),
+	  module: __webpack_require__(11),
+	  route: __webpack_require__(14),
+	  error: __webpack_require__(4),
+	  util: __webpack_require__(16),
+	  version: version
+	};
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/*
+	A coffeescript implementation of a context
+	with inheritance and override.
+	
+	See also dotmpe/invidia for JS
+	 */
+	var Context, _, ctx_prop_spec, error, refToPath,
+	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+	  hasProp = {}.hasOwnProperty;
+	
+	_ = __webpack_require__(3);
+	
+	error = __webpack_require__(4);
+	
+	ctx_prop_spec = function(desc) {
+	  return _.defaults(desc, {
+	    enumerable: false,
+	    configurable: true
+	  });
+	};
+	
+	refToPath = function(ref) {
+	  if (!ref.match(/#\/.*/)) {
+	    throw new Error("Absolute JSON ref only support");
+	  }
+	  return ref.substr(2).replace(/\//g, '.');
+	};
+	
+	Context = (function() {
+	
+	  /*
+	    Obj. hierarchy with dynamic, inherited properties.
+	   */
+	  function Context(init, ctx) {
+	    if (ctx == null) {
+	      ctx = null;
+	    }
+	    this._instance = ++Context._i;
+	    this.context = ctx;
+	    this._data = {};
+	    this._subs = [];
+	    if (ctx && ctx._data) {
+	      this.prepare_from_obj(ctx._data);
+	    }
+	    this.add_data(init);
+	  }
+	
+	  Context.prototype.id = function() {
+	    if (this.context) {
+	      return this.context.id() + '.' + this._instance;
+	    } else {
+	      return this._instance;
+	    }
+	  };
+	
+	  Context.prototype.toString = function() {
+	    return 'Context:' + this.id;
+	  };
+	
+	  Context.prototype.isEmpty = function() {
+	    return _.isEmpty(this._data && (this.context ? this.context.isEmpty() : true));
+	  };
+	
+	  Context.prototype.subs = function() {
+	    return this._subs;
+	  };
+	
+	  Context.prototype.seed = function(obj) {
+	    var k, v;
+	    for (k in obj) {
+	      v = obj[k];
+	      this._data[k] = v;
+	    }
+	    return this;
+	  };
+	
+	  Context.prototype.prepare_from_obj = function(obj) {
+	    var k, results, v;
+	    results = [];
+	    for (k in obj) {
+	      v = obj[k];
+	      results.push(this.prepare_property(k));
+	    }
+	    return results;
+	  };
+	
+	  Context.prototype.prepare_all = function(keys) {
+	    var i, k, len, results;
+	    results = [];
+	    for (i = 0, len = keys.length; i < len; i++) {
+	      k = keys[i];
+	      results.push(this.prepare_property(k));
+	    }
+	    return results;
+	  };
+	
+	  Context.prototype.prepare_property = function(k) {
+	    if (k in this._data) {
+	      return;
+	    }
+	    return this._ctx_property(k, {
+	      get: this._ctxGetter(k),
+	      set: this._ctxSetter(k)
+	    });
+	  };
+	
+	  Context;
+	
+	  Context.prototype.getSub = function(init) {
+	    var SubContext, sub;
+	    SubContext = (function(superClass) {
+	      extend(SubContext, superClass);
+	
+	      function SubContext(init, sup) {
+	        Context.call(this, init, sup);
+	      }
+	
+	      return SubContext;
+	
+	    })(Context);
+	    sub = new SubContext(init, this);
+	    this._subs.push(sub);
+	    return sub;
+	  };
+	
+	  Context.prototype.add_data = function(obj) {
+	    this.prepare_from_obj(obj);
+	    return this.seed(obj);
+	  };
+	
+	  Context.prototype.get = function(path) {
+	    var c, name, p;
+	    p = path.split('.');
+	    c = this;
+	    while (p.length) {
+	      name = p.shift();
+	      if (name in c) {
+	        c = c[name];
+	      } else {
+	        throw new error.NonExistantPathElementException("Unable to get " + name + " of " + path);
+	      }
+	    }
+	    return c;
+	  };
+	
+	  Context.prototype.resolve = function(path, defaultValue) {
+	    var c, lc, name, p;
+	    p = path.split('.');
+	    c = this;
+	    while (p.length) {
+	      if ('$ref' in c) {
+	        lc = c;
+	        try {
+	          c = this.get(refToPath(c.$ref));
+	        } catch (error1) {
+	          error = error1;
+	          if (defaultValue != null) {
+	            return defaultValue;
+	          }
+	          throw error;
+	        }
+	        if (_.isPlainObject(c)) {
+	          delete lc.$ref;
+	          _.merge(lc, c);
+	        }
+	      }
+	      name = p.shift();
+	      if (name in c) {
+	        c = c[name];
+	        if (_.isObject(c) && '$ref' in c) {
+	          lc = c;
+	          try {
+	            c = this.get(refToPath(c.$ref));
+	          } catch (error1) {
+	            error = error1;
+	            if (defaultValue != null) {
+	              return defaultValue;
+	            }
+	            throw error;
+	          }
+	          if (_.isPlainObject(c)) {
+	            delete lc.$ref;
+	            c = _.merge(lc, c);
+	          }
+	        }
+	      } else {
+	        throw new Error("Unable to resolve " + name + " of " + path);
+	      }
+	    }
+	    if (_.isPlainObject(c)) {
+	      return this.merge(c);
+	    }
+	    return c;
+	  };
+	
+	  Context.prototype.merge = function(c) {
+	    var merge, self;
+	    self = this;
+	    merge = function(result, value, key) {
+	      var i, index, item, key2, len, merged, value2;
+	      if (_.isArray(value)) {
+	        for (index = i = 0, len = value.length; i < len; index = ++i) {
+	          item = value[index];
+	          merge(value, item, index);
+	        }
+	      } else if (_.isPlainObject(value)) {
+	        if ('$ref' in value) {
+	          merged = self.merge(self.get(refToPath(value.$ref)));
+	          delete value.$ref;
+	          value = _.merge(value, merged);
+	        } else {
+	          for (key2 in value) {
+	            value2 = value[key2];
+	            merge(value, value2, key2);
+	          }
+	        }
+	      } else if (_.isString(value) || _.isNumber(value) || _.isBoolean(value)) {
+	        null;
+	      } else {
+	        throw new Error("Unhandled value '" + value + "'");
+	      }
+	      return result[key] = value;
+	    };
+	    return _.transform(c, merge);
+	  };
+	
+	  Context.prototype.to_dict = function() {
+	    var _ctx, d;
+	    d = {};
+	    _ctx = this;
+	    while (_ctx) {
+	      d = _.merge(d, _ctx._data);
+	      _ctx = _ctx.context;
+	    }
+	    return d;
+	  };
+	
+	  Context.prototype._ctx_property = function(prop, desc) {
+	    ctx_prop_spec(desc);
+	    return Object.defineProperty(this, prop, desc);
+	  };
+	
+	  Context.prototype._ctxGetter = function(k) {
+	    return function() {
+	      if (k in this._data) {
+	        return this._data[k];
+	      } else if (this.context != null) {
+	        return this.context[k];
+	      }
+	    };
+	  };
+	
+	  Context.prototype._ctxSetter = function(k) {
+	    return function(newVal) {
+	      return this._data[k] = newVal;
+	    };
+	  };
+	
+	  Context.count = function() {
+	    return Context._i;
+	  };
+	
+	  Context.reset = function() {
+	    return Context._i = 0;
+	  };
+	
+	  return Context;
+	
+	})();
+	
+	Context.reset();
+	
+	Context.name = "context-mpe";
+	
+	module.exports = Context;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	module.exports = require("lodash");
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	var NonExistantPathElementException,
+	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+	  hasProp = {}.hasOwnProperty;
+	
+	NonExistantPathElementException = (function(superClass) {
+	  extend(NonExistantPathElementException, superClass);
+	
+	  function NonExistantPathElementException() {
+	    NonExistantPathElementException.__super__.constructor.apply(this, arguments);
+	  }
+	
+	  return NonExistantPathElementException;
+	
+	})(Error);
+	
+	module.exports = {
+	  types: {
+	    NonExistantPathElementException: NonExistantPathElementException
+	  }
+	};
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/*
+	
+	Load metadata for directories/files.
+	Data is stored in local files, can be in different formats.
+	
+	This could get quite extensive. Currently only read YAML.
+	
+	Want some centralized or integrated storage (xattr, ldap)?
+	 */
+	var _, codelib, fs, load, loadDir, metafiles, path, resolve_mvc_meta, typeIsArray, yaml;
+	
+	path = __webpack_require__(6);
+	
+	fs = __webpack_require__(7);
+	
+	yaml = __webpack_require__(8);
+	
+	_ = __webpack_require__(3);
+	
+	codelib = __webpack_require__(9);
+	
+	typeIsArray = Array.isArray || function(value) {
+	  return {}.toString.call(value) === '[object Array]';
+	};
+	
+	metafiles = ['main.meta', 'module.meta', '.meta'];
+	
+	loadDir = function(from_path) {
+	  var i, len, metaf, metap;
+	  for (i = 0, len = metafiles.length; i < len; i++) {
+	    metaf = metafiles[i];
+	    metap = path.join(from_path, metaf);
+	    if (fs.existsSync(metap)) {
+	      return yaml.safeLoad(fs.readFileSync(metap, 'utf8'));
+	    }
+	  }
+	};
+	
+	load = function(from_path, type) {
+	  var i, item, len, md;
+	  md = loadDir(from_path);
+	  if (_.isEmpty(md)) {
+	    return;
+	  }
+	  if (_.isEmpty(type)) {
+	    return md;
+	  }
+	  if (_.isArray(md)) {
+	    for (i = 0, len = md.length; i < len; i++) {
+	      item = md[i];
+	      if (item.type != null) {
+	        if (item.type === type) {
+	          return item;
+	        }
+	      }
+	    }
+	  }
+	  if (_.isObject(md)) {
+	    if (md.type != null) {
+	      if (md.type === type) {
+	        return md;
+	      }
+	    }
+	    return null;
+	  }
+	};
+	
+	resolve_mvc_meta = function(from_path, meta) {
+	  var compname, comppath, i, len, pathprop, ref, version;
+	  version = meta.type.split('/')[1];
+	  meta.path = from_path;
+	  meta.ext_version = version;
+	  if (!meta.components) {
+	    meta.components = ['models', 'views', 'controllers'];
+	  }
+	  ref = meta.components;
+	  for (i = 0, len = ref.length; i < len; i++) {
+	    compname = ref[i];
+	    comppath = path.join(from_path, compname);
+	    pathprop = compname.substring(0, compname.length - 1) + 'Path';
+	    meta[pathprop] = comppath;
+	  }
+	  return meta;
+	};
+	
+	module.exports = {
+	  loadDir: loadDir,
+	  load: load,
+	  resolve_mvc_meta: resolve_mvc_meta,
+	  readJrcModDef: function(md, name) {
+	    var data, from_file, mdef;
+	    from_file = path.join(md.dir);
+	    data = fs.readFileSync(from_file, 'ascii');
+	    mdef = parseJrcHeader(data);
+	    return _.defaults(mdef, {
+	      id: path.join(md.name),
+	      deps: null,
+	      title: null,
+	      description: null
+	    });
+	  },
+	  parseJrcHeader: function(str) {
+	    var argstr, deps, head, header, i, key, len, m, p, prefix, propname;
+	    header = codelib.firstComment(str);
+	    m = {};
+	    for (i = 0, len = header.length; i < len; i++) {
+	      head = header[i];
+	      p = head.indexOf(' ');
+	      if (p === -1) {
+	        continue;
+	      }
+	      propname = head.substr(0, p);
+	      argstr = head.substr(p + 1);
+	      p = propname.indexOf(':');
+	      if (p === -1) {
+	        continue;
+	      }
+	      prefix = propname.substr(0, p);
+	      if (prefix !== 'jrc') {
+	        continue;
+	      }
+	      key = propname.substr(p + 1);
+	      if (key === 'export') {
+	        m.id = argstr.trim();
+	      }
+	      if (key === 'import') {
+	        deps = argstr.trim().split(' ');
+	        m.deps = deps;
+	      }
+	      if (key === 'description') {
+	        m.description = argstr.trim();
+	      }
+	      if (key === 'title') {
+	        m.title = argstr.trim();
+	      }
+	    }
+	    return m;
+	  }
+	};
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	module.exports = require("path");
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	module.exports = require("fs");
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	module.exports = require("js-yaml");
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var LineReader, _, cleanLineComment, firstComment, isLineComment, os;
+	
+	os = __webpack_require__(10);
+	
+	_ = __webpack_require__(3);
+	
+	LineReader = (function() {
+	  function LineReader(str1, eol, lines1) {
+	    this.str = str1;
+	    this.eol = eol != null ? eol : os.EOL;
+	    this.lines = lines1 != null ? lines1 : [];
+	  }
+	
+	  LineReader.prototype.hasNext = function() {
+	    return !_.isEmpty(this.str);
+	  };
+	
+	  LineReader.prototype.next = function() {
+	    line;
+	    var line, p;
+	    p = this.str.indexOf(this.eol);
+	    if (p > -1) {
+	      line = this.str.substr(0, p);
+	      this.str = this.str.substr(p + this.eol.length);
+	    } else {
+	      line = this.str;
+	      this.str = '';
+	    }
+	    this.lines.push(line);
+	    return line;
+	  };
+	
+	  return LineReader;
+	
+	})();
+	
+	isLineComment = function(line) {
+	  return line.trim().substr(0, 1) === '#';
+	};
+	
+	cleanLineComment = function(line) {
+	  return line.trim().substr(1).trim();
+	};
+	
+	firstComment = function(str) {
+	  var line, lineReader, lines;
+	  lines = [];
+	  lineReader = new LineReader(str);
+	  while (lineReader.hasNext()) {
+	    line = lineReader.next();
+	    if (isLineComment(line)) {
+	      lines.push(cleanLineComment(line));
+	    }
+	  }
+	  return lines;
+	};
+	
+	module.exports = {
+	  firstComment: firstComment,
+	  isLineComment: isLineComment,
+	  cleanLineComment: cleanLineComment
+	};
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	module.exports = require("os");
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(module) {
+	/*
+	
+	.mpe 2015 Some code to quickly start an extensible Express app.
+	
+	  'express-mvc/0.1'
+	
+	  'express-mvc-ext/0.1'
+	 */
+	var Component, Core, CoreV01, ModuleV01, _, applyParams, applyRoutes, init, load_core, load_module, metadata, module_classes, path, session, uuid,
+	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+	  hasProp = {}.hasOwnProperty,
+	  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+	
+	path = __webpack_require__(6);
+	
+	_ = __webpack_require__(3);
+	
+	uuid = __webpack_require__(13);
+	
+	metadata = __webpack_require__(5);
+	
+	applyRoutes = __webpack_require__(14).applyRoutes;
+	
+	applyParams = function(app, context) {
+	  var handler, name, ref, results;
+	  if (context.params) {
+	    ref = context.params;
+	    results = [];
+	    for (name in ref) {
+	      handler = ref[name];
+	      results.push(app.param(name, handler));
+	    }
+	    return results;
+	  }
+	};
+	
+	Component = (function() {
+	  function Component(opts) {
+	    this.app = opts.app, this.server = opts.server, this.root = opts.root, this.pkg = opts.pkg, this.config = opts.config, this.meta = opts.meta, this.url = opts.url, this.path = opts.path, this.route = opts.route;
+	    this.base = {};
+	    this.controllers = {};
+	    this.routes = {};
+	    this.models = {};
+	    this.params = {};
+	  }
+	
+	  Component.load_config = function(name) {
+	    return {};
+	  };
+	
+	  Component.prototype.configure = function() {
+	    var p;
+	    p = this.root || this.path;
+	    this.name = this.name || this.meta.name;
+	    if (!this.controllerPath) {
+	      this.controllerPath = path.join(p, 'controllers');
+	    }
+	    if (!this.modelPath) {
+	      this.modelPath = path.join(p, 'models');
+	    }
+	    if (!this.viewPath) {
+	      this.viewPath = path.join(p, 'views');
+	    }
+	    this.load_models();
+	    return this.load_controllers();
+	  };
+	
+	  Component.prototype.load_models = function() {};
+	
+	  Component.prototype.load_model = function(name) {
+	    var modpath;
+	    if (!this.models[name]) {
+	      modpath = path.join(this.modelPath, name);
+	      this.models[name] = __webpack_require__(15)(modpath).define(this.modelbase);
+	    }
+	    return this.models[name];
+	  };
+	
+	  Component.prototype.load_controllers = function() {
+	    var cs;
+	    if (!this.meta.controllers) {
+	      console.warn('No controllers for component', this.name);
+	      return;
+	    }
+	    cs = this.meta.controllers;
+	    if (_.isArray(cs)) {
+	      this.load_controller_names();
+	    } else if (_.isObject(cs) && !_.isEmpty(cs)) {
+	      this.update_controller(cs);
+	    }
+	    return this.apply_controllers();
+	  };
+	
+	  Component.prototype.load_controller_names = function() {
+	    var ctrl, ctrl_path, err, i, len, p, ref, results, updateObj;
+	    p = this.root || this.path;
+	    ref = this.meta.controllers;
+	    results = [];
+	    for (i = 0, len = ref.length; i < len; i++) {
+	      ctrl = ref[i];
+	      ctrl_path = path.join(p, ctrl);
+	      this.controllers[ctrl] = __webpack_require__(15)(ctrl_path);
+	      try {
+	        updateObj = this.controllers[ctrl](this, this.base);
+	      } catch (error) {
+	        err = error;
+	        console.error("Unable to load " + ctrl);
+	        throw err;
+	      }
+	      this.update_controller(updateObj);
+	      results.push(console.log("Component: " + this.name + " loaded", ctrl, "controller"));
+	    }
+	    return results;
+	  };
+	
+	  Component.prototype.update_controller = function(updateObj) {
+	    var comp;
+	    comp = this.core || this;
+	    if (updateObj.meta) {
+	      _.merge(comp.meta, updateObj.meta);
+	    }
+	    if (updateObj.params) {
+	      _.merge(this.params, updateObj.params);
+	    }
+	    if (updateObj.route) {
+	      return _.merge(this.route, updateObj.route);
+	    }
+	  };
+	
+	  Component.prototype.apply_controllers = function() {
+	    var defroute;
+	    _.extend(this.routes, applyRoutes(this.app, this.url, this));
+	    applyParams(this.app, this);
+	    if (this.meta.default_route) {
+	      defroute = path.join(this.url, this.meta.default_route);
+	      return this.app.all(this.url, this.base.redirect(defroute));
+	    }
+	  };
+	
+	  return Component;
+	
+	})();
+	
+	Core = (function(superClass) {
+	  extend(Core, superClass);
+	
+	  function Core(opts) {
+	    Core.__super__.constructor.call(this, opts);
+	    this.name = this.name || 'core';
+	  }
+	
+	  Core.config = function(md, core_path) {
+	    var core_file, core_seed_cb, opts;
+	    core_file = path.join(__noderoot, core_path, 'main');
+	    core_seed_cb = __webpack_require__(15)(core_file);
+	    opts = core_seed_cb(core_path);
+	    _.defaults(opts, {
+	      route: {}
+	    });
+	    return opts;
+	  };
+	
+	  return Core;
+	
+	})(Component);
+	
+	CoreV01 = (function(superClass) {
+	  extend(CoreV01, superClass);
+	
+	
+	  /*
+	  
+	  | Encapsulate Express MVC for extension.
+	  | XXX what to use for models?
+	  
+	  - views
+	  - models
+	  - controllers
+	   */
+	
+	  function CoreV01(opts) {
+	    CoreV01.__super__.constructor.call(this, opts);
+	    this.modules = {};
+	  }
+	
+	  CoreV01.prototype.configure = function() {
+	    var self;
+	    this.url = this.url || '';
+	    this.modelPath = path.join(this.root, 'models');
+	    self = this;
+	    this.app.use(function(req, res, next) {
+	      res.locals.core = self;
+	      res.locals.modules = [];
+	      return next();
+	    });
+	    return CoreV01.__super__.configure.apply(this, arguments);
+	  };
+	
+	
+	  /*
+	    CoreV01.load_modules
+	   */
+	
+	  CoreV01.prototype.load_modules = function() {
+	    var fullpath, i, len, mod, modpath, modroot, mods, results;
+	    modroot = path.join(__noderoot, this.config.src || 'src');
+	    mods = _.extend([], this.config.modules, this.meta.modules);
+	    results = [];
+	    for (i = 0, len = mods.length; i < len; i++) {
+	      modpath = mods[i];
+	      fullpath = path.join(modroot, modpath);
+	      mod = ModuleV01.load(this, fullpath);
+	      mod.configure();
+	      this.modules[mod.meta.name] = mod;
+	      results.push(console.log('loaded module', modpath, mod.meta.name));
+	    }
+	    return results;
+	  };
+	
+	
+	  /*
+	    CoreV01.get_all_components
+	   */
+	
+	  CoreV01.prototype.get_all_components = function() {
+	    var comps;
+	    comps = [this];
+	    return _.union(comps, _.values(this.modules));
+	  };
+	
+	  CoreV01.prototype.start = function() {
+	    var self;
+	    self = this;
+	    return this.server.listen(this.app.get("port"), function() {
+	      return console.log("Express server listening on port " + self.app.get("port"));
+	    });
+	  };
+	
+	  CoreV01.DEFAULT_METADATA = [
+	    {
+	      type: 'express-mvc-core/0.2'
+	    }
+	  ];
+	
+	  CoreV01.SUPPORTED = ['express-mvc-core/0.1', 'express-mvc-core/0.2'];
+	
+	  CoreV01.load = function(core_path) {
+	    var i, len, md, mdc, ref, results;
+	    md = metadata.load(core_path);
+	    if (!md) {
+	      console.warn("No metadata for core", core_path);
+	      md = CoreV01.DEFAULT_METADATA;
+	    }
+	    results = [];
+	    for (i = 0, len = md.length; i < len; i++) {
+	      mdc = md[i];
+	      if (!'type' in mdc) {
+	        continue;
+	      }
+	      if (ref = mdc.type, indexOf.call(CoreV01.SUPPORTED, ref) >= 0) {
+	        results.push(CoreV01.load_from_metadata(core_path, mdc));
+	      } else {
+	        results.push(void 0);
+	      }
+	    }
+	    return results;
+	  };
+	
+	  CoreV01.load_from_metadata = function(core_path, mdc) {
+	    var CoreClass, opts;
+	    CoreClass = CoreV01;
+	    opts = CoreClass.config([mdc], core_path);
+	    return new CoreClass(opts);
+	  };
+	
+	  return CoreV01;
+	
+	})(Core);
+	
+	ModuleV01 = (function(superClass) {
+	  extend(ModuleV01, superClass);
+	
+	
+	  /*
+	  
+	  | Handle Express MVC extension modules.
+	  
+	  - handlers
+	  - routes
+	   */
+	
+	  function ModuleV01(opts) {
+	    this.core = opts.core;
+	    if (!opts.name) {
+	      opts.name = 'ModuleV01';
+	    }
+	    ModuleV01.__super__.constructor.call(this, opts);
+	  }
+	
+	  ModuleV01.DEFAULT_METADATA = [
+	    {
+	      type: 'express-mvc-ext/0.2'
+	    }
+	  ];
+	
+	  ModuleV01.SUPPORTED = ['express-mvc-ext/0.1', 'express-mvc-ext/0.2'];
+	
+	  ModuleV01.load = function(core, from_path) {
+	    var i, len, md, mdc, ref, results;
+	    md = metadata.load(from_path);
+	    if (!md) {
+	      console.warn("No metadata for module", from_path);
+	      md = ModuleV01.DEFAULT_METADATA;
+	    }
+	    results = [];
+	    for (i = 0, len = md.length; i < len; i++) {
+	      mdc = md[i];
+	      if (!'type' in mdc) {
+	        continue;
+	      }
+	      if (ref = mdc.type, indexOf.call(ModuleV01.SUPPORTED, ref) >= 0) {
+	        results.push(ModuleV01.load_from_metadata(core, from_path, mdc));
+	      } else {
+	        results.push(void 0);
+	      }
+	    }
+	    return results;
+	  };
+	
+	  ModuleV01.load_from_metadata = function(core, from_path, mdc) {
+	    var ModuleClass, md, opts;
+	    md = metadata.resolve_mvc_meta(from_path, mdc);
+	    if (!md.controllers) {
+	      console.error("Missing MVC meta for ", mdc);
+	    }
+	    ModuleClass = module_classes[md.ext_version];
+	    opts = ModuleClass.config(core, md, from_path);
+	    return new ModuleClass(opts);
+	  };
+	
+	  ModuleV01.config = function(core, md, from_path) {
+	    return {
+	      meta: md || {
+	        name: md.name
+	      },
+	      config: md.config || {},
+	      route: md.route || {},
+	      core: core,
+	      app: core.app,
+	      base: core.base,
+	      path: from_path
+	    };
+	  };
+	
+	  return ModuleV01;
+	
+	})(Component);
+	
+	module_classes = {
+	  '0.1': ModuleV01,
+	  '0.2': ModuleV01
+	};
+	
+	session = {
+	  instances: {},
+	  projects: {},
+	  apps: {}
+	};
+	
+	init = function(node_path, app_path) {
+	  var code_id;
+	  if (app_path == null) {
+	    app_path = null;
+	  }
+	  if (!session.projects[node_path]) {
+	    code_id = uuid.v4();
+	    session.projects[node_path] = code_id;
+	  } else {
+	    code_id = session.projects[node_path];
+	  }
+	  return global.__noderoot = node_path;
+	};
+	
+	load_core = function(app_path) {
+	  var app_id, core;
+	  global.__approot = app_path;
+	  app_id;
+	  if (!session.apps[app_path]) {
+	    app_id = uuid.v4();
+	    session.apps[app_path] = app_id;
+	  } else {
+	    app_id = session.apps[app_path];
+	  }
+	  global.__appid = app_id;
+	  if (!session.instances[app_id]) {
+	    session.instances[app_id] = core = CoreV01.load(app_path);
+	  } else {
+	    core = session.instances[app_id];
+	  }
+	  return core;
+	};
+	
+	load_module = function(mod_path) {
+	  module.configure(extroot);
+	  return module.load(app);
+	};
+	
+	module.exports = {
+	  session: session,
+	  init: init,
+	  classes: {
+	    Core: CoreV01,
+	    Module: ModuleV01
+	  },
+	  load_core: load_core,
+	  load_and_start: function(app_path) {
+	    var core;
+	    init(process.cwd());
+	    core = load_core(app_path);
+	    core.configure();
+	    core.load_modules();
+	    return core.start();
+	  }
+	};
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	module.exports = function(module) {
+		if(!module.webpackPolyfill) {
+			module.deprecate = function() {};
+			module.paths = [];
+			// module.parent = undefined by default
+			module.children = [];
+			module.webpackPolyfill = 1;
+		}
+		return module;
+	}
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	module.exports = require("node-uuid");
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/*
+	Metadata to Express helpers.
+	 */
+	var _, applyRoutes, resolveHandler,
+	  slice = [].slice;
+	
+	_ = __webpack_require__(3);
+	
+	resolveHandler = function(module, cb) {
+	  var core, name, ref, type;
+	  ref = cb.substr(0, cb.length - 1).split('('), type = ref[0], name = ref[1];
+	  core = module.core;
+	  return new core.base.type[type](module, name);
+	};
+	
+	applyRoutes = function(app, root, module) {
+	  var cb, h, i, len, method, name, ref, ref1, route, routes, subRoutes, url;
+	  if (!app) {
+	    throw new Error("Missing app");
+	  }
+	  routes = {};
+	  ref = module.route;
+	  for (name in ref) {
+	    route = ref[name];
+	    url = [root, name].join('/').replace('$', ':');
+	    if (route.route) {
+	      subRoutes = applyRoutes(app, url, route);
+	      _.extend(routes, subRoutes);
+	    }
+	    ref1 = ['all', 'get', 'put', 'post', 'options', 'delete'];
+	    for (i = 0, len = ref1.length; i < len; i++) {
+	      method = ref1[i];
+	      cb = route[method];
+	      if (cb) {
+	        if (!(url in routes)) {
+	          routes[url] = {};
+	        }
+	        if (method in routes[url]) {
+	          console.error("Already routed: ", method, url);
+	        }
+	        routes[url][method] = cb;
+	        if (_.isArray(cb)) {
+	          app[method].apply(app, [url].concat(slice.call(cb)));
+	        } else if (_.isString(cb)) {
+	          h = resolveHandler(module, cb);
+	          app[method](url, _.bind(h[method], h));
+	        } else {
+	          app[method](url, cb);
+	        }
+	      }
+	    }
+	  }
+	  return routes;
+	};
+	
+	module.exports = {
+	  applyRoutes: applyRoutes
+	};
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var map = {
+		"./code": 9,
+		"./code.coffee": 9,
+		"./context": 2,
+		"./context.coffee": 2,
+		"./error": 4,
+		"./error.coffee": 4,
+		"./index": 1,
+		"./index.coffee": 1,
+		"./metadata": 5,
+		"./metadata.coffee": 5,
+		"./module": 11,
+		"./module.coffee": 11,
+		"./route": 14,
+		"./route.coffee": 14,
+		"./util": 16,
+		"./util.coffee": 16
+	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+	webpackContext.id = 15;
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	
+	/**
+	 * Formats mongoose errors into proper array
+	 *
+	 * @param {Array} errors
+	 * @return {Array}
+	 * @api public
+	 */
+	exports.errors = function(errors) {
+	  var errs, keys;
+	  keys = Object.keys(errors);
+	  errs = [];
+	  if (!keys) {
+	    return ['Oops! There was an error'];
+	  }
+	  keys.forEach(function(key) {
+	    errs.push(errors[key].message);
+	  });
+	  return errs;
+	};
+	
+	
+	/**
+	 * Index of object within an array
+	 *
+	 * @param {Array} arr
+	 * @param {Object} obj
+	 * @return {Number}
+	 * @api public
+	 */
+	
+	exports.indexof = function(arr, obj) {
+	  var index, keys, result;
+	  index = -1;
+	  keys = Object.keys(obj);
+	  result = arr.filter(function(doc, idx) {
+	    var i, matched;
+	    matched = 0;
+	    i = keys.length - 1;
+	    while (i >= 0) {
+	      if (doc[keys[i]] === obj[keys[i]]) {
+	        matched++;
+	        if (matched === keys.length) {
+	          index = idx;
+	          return idx;
+	        }
+	      }
+	      i--;
+	    }
+	  });
+	  return index;
+	};
+	
+	
+	/**
+	 * Find object in an array of objects that matches a condition
+	 *
+	 * @param {Array} arr
+	 * @param {Object} obj
+	 * @param {Function} cb - optional
+	 * @return {Object}
+	 * @api public
+	 */
+	
+	exports.findByParam = function(arr, obj, cb) {
+	  var index;
+	  index = exports.indexof(arr, obj);
+	  if (~index && typeof cb === 'function') {
+	    return cb(void 0, arr[index]);
+	  } else if (~index && !cb) {
+	    return arr[index];
+	  } else if (!~index && typeof cb === 'function') {
+	    return cb('not found');
+	  }
+	};
+
+
+/***/ }
+/******/ ]);
+//# sourceMappingURL=nodelib.js.map
