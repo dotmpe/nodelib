@@ -9,7 +9,8 @@ expect = chai.expect
 describe "Module 'nodelib.module' provides classes and routines to set up
     an Express application. ", ->
 
-  describe 'To do so it has a framework composed of two extensible components.', ->
+  describe 'To do so it has a framework composed of \
+      two extensible components.', ->
 
 
     describe 'First, the core,', ->
@@ -97,6 +98,7 @@ describe "Module 'nodelib.module' provides classes and routines to set up
       #core = module.load_core 'test/example/core'
       #core.configure()
       #core.load_modules()
-      # FIXME: euhm.. build or find interrupt mechanism and start this in a coroutine core.start()
+      # FIXME: euhm.. build or find interrupt mechanism and start this in a 
+      #        coroutine core.start()
 
 

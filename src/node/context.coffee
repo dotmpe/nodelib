@@ -54,17 +54,19 @@ class Context
   prepare_from_obj: ( obj ) ->
     for k, v of obj
       @prepare_property k
+    @
 
   prepare_all: ( keys ) ->
     for k in keys
       @prepare_property k
+    @
 
   prepare_property: ( k ) ->
-      if k of @_data
-        return
-      @_ctx_property k,
-        get: @_ctxGetter( k )
-        set: @_ctxSetter( k )
+    if k of @_data
+      return
+    @_ctx_property k,
+      get: @_ctxGetter( k )
+      set: @_ctxSetter( k )
     @
 
   # new subcontext, inherits current instance, optional new or override vars
@@ -230,7 +232,7 @@ class Context
 
 # Class vars
 Context.reset()
-Context.name = "context-mpe"
+# XXX: not strict: Context.name = "context-mpe"
 
 module.exports = Context
 
