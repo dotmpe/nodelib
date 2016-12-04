@@ -150,36 +150,33 @@ module.exports =
 	  };
 	
 	  Context.prototype.prepare_from_obj = function(obj) {
-	    var k, results, v;
-	    results = [];
+	    var k, v;
 	    for (k in obj) {
 	      v = obj[k];
-	      results.push(this.prepare_property(k));
+	      this.prepare_property(k);
 	    }
-	    return results;
+	    return this;
 	  };
 	
 	  Context.prototype.prepare_all = function(keys) {
-	    var i, k, len, results;
-	    results = [];
+	    var i, k, len;
 	    for (i = 0, len = keys.length; i < len; i++) {
 	      k = keys[i];
-	      results.push(this.prepare_property(k));
+	      this.prepare_property(k);
 	    }
-	    return results;
+	    return this;
 	  };
 	
 	  Context.prototype.prepare_property = function(k) {
 	    if (k in this._data) {
 	      return;
 	    }
-	    return this._ctx_property(k, {
+	    this._ctx_property(k, {
 	      get: this._ctxGetter(k),
 	      set: this._ctxSetter(k)
 	    });
+	    return this;
 	  };
-	
-	  Context;
 	
 	  Context.prototype.getSub = function(init) {
 	    var SubContext, sub;
@@ -370,8 +367,6 @@ module.exports =
 	})();
 	
 	Context.reset();
-	
-	Context.name = "context-mpe";
 	
 	module.exports = Context;
 

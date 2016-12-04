@@ -18,7 +18,7 @@
   "main": "dist/nodelib.js",
   "bin": {},
   "scripts": {
-    "build": "gulp dist-build",
+    "build": "grunt build",
     "test": "grunt --force lint test",
     "src-tree": "tree -I 'node_modules|build|components'",
     "src-files": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' ",

@@ -80,7 +80,10 @@ module.exports = ( grunt ) ->
     exec:
       es2015_test:
         cmd: 'node --use_strict test/test.js'
-       
+      
+      gulp_dist_build:
+        cmd: "gulp dist-build"
+
 
     pkg: grunt.file.readJSON('package.json')
 
@@ -97,6 +100,10 @@ module.exports = ( grunt ) ->
     'mochaTest'
     'coffee:compile'
     'exec:es2015_test'
+  ]
+
+  grunt.registerTask 'build', [
+    "exec:gulp_dist_build"
   ]
 
   # Everything
