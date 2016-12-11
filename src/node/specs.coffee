@@ -30,7 +30,9 @@ class Spec
   @root: null
   @add: ( spec ) ->
     Spec.root.add spec
-   
+  
+  @update: ( doc ) ->
+
 
 class Output
   constructor: ->
@@ -99,7 +101,8 @@ module.exports.parse = ( filename ) ->
           idx = '-'
 
         if typeof(idx) != 'string' and stack[stack.length-1].index != idx
-          throw Error "Index #{stack[stack.length-1].index} #{m[1]}"
+          if idx != 0
+            throw Error "Index #{stack[stack.length-1].index} #{m[1]}"
 
         console.log stack[stack.length-1].indent\
           +stack[stack.length-1].sid, stack[stack.length-1].description
