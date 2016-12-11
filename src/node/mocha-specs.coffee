@@ -101,7 +101,8 @@ writers =
 
 
 class MochaSpecReader
-  constructor: ->
+  constructor: ( @base='../../' ) ->
+    @base = process.cwd()+'/'
     @specs = {}
 
   populate_spec: ( opts, file_name ) ->
@@ -138,7 +139,7 @@ class MochaSpecReader
 
     spec_name = path.basename file_name, '.coffee'
 
-    require '../../'+path.join opts.dirname, spec_name
+    require @base+path.join opts.dirname, spec_name
 
     @specs[spec_name] = spec
 
