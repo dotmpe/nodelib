@@ -38,7 +38,7 @@ var config = {
 		]
 	},
   devtool: 'sourcemap',
-}
+};
 
 gulp.task('dist-build', function(done) {
   webpack(config).run(function(err, stats) {

@@ -1,3 +1,4 @@
+'use strict'
 
 module.exports = ( grunt ) ->
 
@@ -44,9 +45,16 @@ module.exports = ( grunt ) ->
         dest: 'build/js/'
         ext: '.js'
 
+    jshint:
+      options:
+        jshintrc: '.jshintrc'
+      gulpfile: [ 'gulpfile.js' ]
+      package: [ '*.json' ]
+
     coffeelint:
       options:
         configFile: '.coffeelint.json'
+      gruntfile: [ 'Gruntfile.coffee' ]
       app: [
         'bin/*.coffee'
         'src/**/*.coffee'
@@ -54,18 +62,11 @@ module.exports = ( grunt ) ->
       ]
 
     yamllint:
-      all:
-        src: [
-          'Sitefile.yaml'
-          '**/*.metadata'
-        ]
-
-    jshint:
-      options:
-        jshintrc: '.jshintrc'
-      gruntfile:
-        src: 'Gruntfile.js'
-
+      all: [
+        'Sitefile.yaml'
+        'package.yaml'
+        '**/*.meta'
+      ]
 
     mochaTest:
       test:
@@ -78,21 +79,30 @@ module.exports = ( grunt ) ->
         src: ['test/mocha/*.coffee']
 
     exec:
+      check_version:
+        cmd: "git-versioning check"
       es2015_test:
         cmd: 'node --use_strict test/test.js'
       
       gulp_dist_build:
         cmd: "gulp dist-build"
 
+      spec_update:
+        cmd: "sh ./tools/update-spec.sh"
 
-    pkg: grunt.file.readJSON('package.json')
+    pkg: grunt.file.readJSON 'package.json'
 
 
   # Static analysis of source files
   grunt.registerTask 'lint', [
-    'coffeelint',
-    'jshint',
+    'coffeelint'
+    'jshint'
     'yamllint'
+  ]
+
+  grunt.registerTask 'check', [
+    'exec:check_version'
+    'lint'
   ]
 
   # Test both source and compiled JS
@@ -102,14 +112,15 @@ module.exports = ( grunt ) ->
     'exec:es2015_test'
   ]
 
-  grunt.registerTask 'build', [
-    "exec:gulp_dist_build"
-  ]
-
   # Everything
   grunt.registerTask 'default', [
-    'lint',
+    'lint'
     'test'
   ]
 
+  # Documentation artefacts, some intial publishing
+  grunt.registerTask 'build', [
+    "exec:gulp_dist_build"
+    'exec:spec_update'
+  ]
  

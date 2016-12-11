@@ -63,7 +63,7 @@ module.exports =
 	  module: __webpack_require__(11),
 	  route: __webpack_require__(14),
 	  error: __webpack_require__(4),
-	  util: __webpack_require__(16),
+	  util: __webpack_require__(41),
 	  version: version
 	};
 
@@ -1177,12 +1177,18 @@ module.exports =
 		"./index.coffee": 1,
 		"./metadata": 5,
 		"./metadata.coffee": 5,
+		"./mocha-specs": 16,
+		"./mocha-specs.coffee": 16,
 		"./module": 11,
 		"./module.coffee": 11,
 		"./route": 14,
 		"./route.coffee": 14,
-		"./util": 16,
-		"./util.coffee": 16
+		"./specs": 30,
+		"./specs.coffee": 30,
+		"./table": 32,
+		"./table.coffee": 32,
+		"./util": 41,
+		"./util.coffee": 41
 	};
 	function webpackContext(req) {
 		return __webpack_require__(webpackContextResolve(req));
@@ -1200,6 +1206,792 @@ module.exports =
 
 /***/ },
 /* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/*
+	
+	While mocha has no need for dry-run, this script was made to query and maybe
+	interact with the test specs.
+	
+	- It relies on synchronous loading of specs while patching globals.
+	- This is all strictly line-based to keep it simple and codesize low.
+	
+	https://github.com/mochajs/mocha/pull/1070
+	 */
+	var MochaSpecReader, _, defaultopts, fs, getopts, id_re, path, schema, writers;
+	
+	path = __webpack_require__(6);
+	
+	fs = __webpack_require__(7);
+	
+	_ = __webpack_require__(3);
+	
+	defaultopts = {
+	  dirname: './test/mocha/',
+	  format: 'yaml',
+	  indent: '',
+	  yaml: {
+	    description_style: 'keys',
+	    description_attr: 'name',
+	    item_style: 'numerical_keys',
+	    item_attr: 'it'
+	  }
+	};
+	
+	schema = {
+	  properties: {
+	    format: {
+	      "enum": ['rst', 'yaml']
+	    },
+	    rst: {},
+	    yaml: {
+	      properties: {
+	        description_style: {
+	          "enum": ['keys', 'attr']
+	        },
+	        description_attr: {
+	          type: 'string'
+	        },
+	        item_style: {
+	          "enum": ['list_attr', 'numerical_keys']
+	        },
+	        item_attr: {
+	          type: 'string'
+	        }
+	      }
+	    }
+	  }
+	};
+	
+	getopts = function(opts) {
+	  if (opts == null) {
+	    opts = {};
+	  }
+	  return _.defaultsDeep(opts, defaultopts);
+	};
+	
+	id_re = /^[A-Za-z_][A-Za-z0-9_]+$/;
+	
+	writers = {
+	  rst: {
+	    describe: function(opts, ctx, text) {
+	      var tab;
+	      tab = opts.feature_table.find('ID', text);
+	      if (tab) {
+	        console.log("" + opts.indent + tab.CAT + ". " + text);
+	      } else {
+	        console.log(opts.indent + "- " + text);
+	      }
+	      return console.log('');
+	    },
+	    start_describe: function(opts, ctx, text) {},
+	    end_describe: function(opts, ctx) {},
+	    it: function(opts, ctx, idx, text) {
+	      return console.log("" + opts.indent + idx + ". " + text);
+	    },
+	    start_it: function(opts, ctx, idx, text) {},
+	    end_it: function(opts, ctx, idx, text) {
+	      return console.log('');
+	    }
+	  },
+	  yaml: {
+	    describe: function(opts, ctx, text) {
+	      var attr;
+	      if (opts.yaml.description_style === 'keys') {
+	        if (text.match(id_re)) {
+	          return console.log("" + opts.indent + text + ":");
+	        } else {
+	          return console.log(opts.indent + "'" + text + "':");
+	        }
+	      } else if (opts.yaml.description_style === 'attr') {
+	        attr = opts.yaml.description_attr;
+	        if (text.match(id_re)) {
+	          return console.log(opts.indent + "- " + attr + ": " + text + ":");
+	        } else {
+	          return console.log(opts.indent + "- " + attr + ": '" + text + "':");
+	        }
+	      }
+	    },
+	    start_describe: function(opts, ctx, text) {},
+	    end_describe: function(opts, ctx) {},
+	    it: function(opts, ctx, idx, text) {
+	      if (opts.yaml.item_style === 'numerical_keys') {
+	        if (text.match(id_re)) {
+	          return console.log("" + opts.indent + idx + ": " + text);
+	        } else {
+	          return console.log("" + opts.indent + idx + ": '" + text + "'");
+	        }
+	      }
+	    },
+	    start_it: function(opts, ctx, idx, text) {},
+	    end_it: function(opts, ctx, idx, text) {}
+	  }
+	};
+	
+	MochaSpecReader = (function() {
+	  function MochaSpecReader() {
+	    this.specs = {};
+	  }
+	
+	  MochaSpecReader.prototype.populate_spec = function(opts, file_name) {
+	    var ctx, describe, it, spec_name;
+	    global.before = function() {};
+	    global.beforeEach = function() {};
+	    global.after = function() {};
+	    global.afterEach = function() {};
+	    ctx = {};
+	    ctx.timeout = function() {};
+	    global.spec = {
+	      cwd: '',
+	      items: [],
+	      comps: {}
+	    };
+	    describe = function(text, cb) {
+	      var nspec, spec;
+	      spec = global.spec;
+	      nspec = spec.comps[text] = {
+	        cwd: '',
+	        items: [],
+	        comps: {}
+	      };
+	      nspec.cwd = spec.cwd + ' / ' + text;
+	      global.spec = nspec;
+	      cb.bind(ctx)();
+	      global.spec = spec;
+	      return null;
+	    };
+	    it = function(text, cb) {
+	      spec.items.push(text);
+	      return null;
+	    };
+	    global.describe = describe.bind(ctx);
+	    global.it = it.bind(ctx);
+	    spec_name = path.basename(file_name, '.coffee');
+	    __webpack_require__(17)("./" + path.join(opts.dirname, spec_name));
+	    this.specs[spec_name] = spec;
+	    delete global.before;
+	    delete global.beforeEach;
+	    delete global.after;
+	    delete global.afterEach;
+	    delete global.spec;
+	    return spec_name;
+	  };
+	
+	  MochaSpecReader.load_dir = function(opts) {
+	    var file_name, i, len, name, reader, ref;
+	    reader = new MochaSpecReader();
+	    ref = fs.readdirSync(opts.dirname);
+	    for (i = 0, len = ref.length; i < len; i++) {
+	      file_name = ref[i];
+	      if (!file_name.match(/\.coffee$/)) {
+	        continue;
+	      }
+	      name = reader.populate_spec(opts, file_name);
+	    }
+	    return reader;
+	  };
+	
+	  MochaSpecReader.print = function(name, ctx, opts) {
+	    var i, idx, item, len, name_, ref, results;
+	    results = [];
+	    for (name_ in ctx.comps) {
+	      writers[opts.format].describe(opts, ctx.comps[name_], name_);
+	      if ('comps' in ctx.comps[name_]) {
+	        opts.indent += '  ';
+	        MochaSpecReader.print(name_, ctx.comps[name_], opts);
+	        opts.indent = opts.indent.substr(2);
+	      }
+	      if ('items' in ctx.comps[name_]) {
+	        opts.indent += '  ';
+	        writers[opts.format].start_it(opts, ctx.comps[name_]);
+	        ref = ctx.comps[name_].items;
+	        for (idx = i = 0, len = ref.length; i < len; idx = ++i) {
+	          item = ref[idx];
+	          writers[opts.format].it(opts, ctx.comps[name_], 1 + idx, item);
+	        }
+	        writers[opts.format].end_it(opts, ctx.comps[name_]);
+	        results.push(opts.indent = opts.indent.substr(2));
+	      } else {
+	        results.push(void 0);
+	      }
+	    }
+	    return results;
+	  };
+	
+	  return MochaSpecReader;
+	
+	})();
+	
+	module.exports = {
+	  opts: {
+	    defaults: defaultopts,
+	    schema: schema,
+	    get: getopts
+	  },
+	  MochaSpecReader: MochaSpecReader,
+	  print_all: function(specs, opts) {
+	    var name, results;
+	    if (opts == null) {
+	      opts = null;
+	    }
+	    if (!opts) {
+	      opts = getopts();
+	    }
+	    console.log(opts.feature_table);
+	    results = [];
+	    for (name in specs) {
+	      writers[opts.format].describe(opts, specs[name], name);
+	      opts.indent = '  ';
+	      MochaSpecReader.print(name, specs[name], opts);
+	      results.push(opts.indent = opts.indent.substr(2));
+	    }
+	    return results;
+	  }
+	};
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var map = {
+		"./Gruntfile": 19,
+		"./Gruntfile.coffee": 19,
+		"./bin/specs": 29,
+		"./bin/specs.coffee": 29,
+		"./src/node/code": 9,
+		"./src/node/code.coffee": 9,
+		"./src/node/context": 2,
+		"./src/node/context.coffee": 2,
+		"./src/node/error": 4,
+		"./src/node/error.coffee": 4,
+		"./src/node/index": 1,
+		"./src/node/index.coffee": 1,
+		"./src/node/metadata": 5,
+		"./src/node/metadata.coffee": 5,
+		"./src/node/mocha-specs": 16,
+		"./src/node/mocha-specs.coffee": 16,
+		"./src/node/module": 11,
+		"./src/node/module.coffee": 11,
+		"./src/node/route": 14,
+		"./src/node/route.coffee": 14,
+		"./src/node/specs": 30,
+		"./src/node/specs.coffee": 30,
+		"./src/node/table": 32,
+		"./src/node/table.coffee": 32,
+		"./src/node/util": 41,
+		"./src/node/util.coffee": 41,
+		"./test/example/core/main": 42,
+		"./test/example/core/main.coffee": 42,
+		"./test/mocha/context": 44,
+		"./test/mocha/context.coffee": 44,
+		"./test/mocha/module": 46,
+		"./test/mocha/module.coffee": 46,
+		"./test/mocha/route": 47,
+		"./test/mocha/route.coffee": 47
+	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+	webpackContext.id = 17;
+
+
+/***/ },
+/* 18 */,
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(__dirname) {'use strict';
+	module.exports = function(grunt) {
+	  __webpack_require__(20)(grunt);
+	  grunt.initConfig({
+	    watch: {
+	      coffee: {
+	        files: 'src/node/*.coffee',
+	        tasks: ['coffee:compile', 'exec:es2015_test', 'mochaTest:test']
+	      }
+	
+	      /*
+	      gruntfile:
+	        files: '<%= jshint.gruntfile.src %>'
+	        tasks: ['jshint:gruntfile']
+	      
+	      lib:
+	        files: '<%= jshint.lib.src %>'
+	        tasks: [
+	          'jshint:src'
+	          'nodeunit'
+	        ]
+	      
+	      test:
+	        files: '<%= jshint.test.src %>'
+	        tasks: [
+	          'test'
+	        ]
+	       */
+	    },
+	    coffee: {
+	      compile: {
+	        expand: true,
+	        flatten: true,
+	        cwd: __dirname + "/src/node/",
+	        src: ["*.coffee"],
+	        dest: 'build/js/',
+	        ext: '.js'
+	      }
+	    },
+	    jshint: {
+	      options: {
+	        jshintrc: '.jshintrc'
+	      },
+	      gulpfile: ['gulpfile.js'],
+	      "package": ['*.json']
+	    },
+	    coffeelint: {
+	      options: {
+	        configFile: '.coffeelint.json'
+	      },
+	      gruntfile: ['Gruntfile.coffee'],
+	      app: ['bin/*.coffee', 'src/**/*.coffee', 'test/**/*.coffee']
+	    },
+	    yamllint: {
+	      all: ['Sitefile.yaml', 'package.yaml', '**/*.meta']
+	    },
+	    mochaTest: {
+	      test: {
+	        options: {
+	          reporter: 'spec',
+	          require: 'coffee-script/register',
+	          captureFile: 'mocha.out',
+	          quiet: false,
+	          clearRequireCache: false
+	        },
+	        src: ['test/mocha/*.coffee']
+	      }
+	    },
+	    exec: {
+	      check_version: {
+	        cmd: "git-versioning check"
+	      },
+	      es2015_test: {
+	        cmd: 'node --use_strict test/test.js'
+	      },
+	      gulp_dist_build: {
+	        cmd: "gulp dist-build"
+	      },
+	      spec_update: {
+	        cmd: "sh ./tools/update-spec.sh"
+	      }
+	    },
+	    pkg: grunt.file.readJSON('package.json')
+	  });
+	  grunt.registerTask('lint', ['coffeelint', 'jshint', 'yamllint']);
+	  grunt.registerTask('check', ['exec:check_version', 'lint']);
+	  grunt.registerTask('test', ['mochaTest', 'coffee:compile', 'exec:es2015_test']);
+	  grunt.registerTask('default', ['lint', 'test']);
+	  return grunt.registerTask('build', ["exec:gulp_dist_build", 'exec:spec_update']);
+	};
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, "/"))
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	module.exports = require("load-grunt-tasks");
+
+/***/ },
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var cmd, doc, filename, libmochaspecs, libspecs, libtable, opts, pkg, upd, updates;
+	
+	libmochaspecs = __webpack_require__(16);
+	
+	libspecs = __webpack_require__(30);
+	
+	libtable = __webpack_require__(32);
+	
+	if (process.argv.length === 2) {
+	  process.argv.push('--help');
+	}
+	
+	cmd = process.argv[2];
+	
+	if (cmd === '--version' || cmd === '--help') {
+	  pkg = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../package.json\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	  console.log("nodelib-specs/" + pkg.version);
+	} else if (cmd === '--specs') {
+	  if (process.argv.length < 4) {
+	    process.argv.push(libmochaspecs.opts.defaults.format);
+	  }
+	  opts = libmochaspecs.opts.get({
+	    format: process.argv[3]
+	  });
+	  libtable.Table.parse(filename = 'features.tab').then(function(table) {
+	    var reader;
+	    opts.feature_table = table;
+	    reader = libmochaspecs.MochaSpecReader.load_dir(opts);
+	    return libmochaspecs.print_all(reader.specs, opts);
+	  });
+	} else if (cmd === '--verify' || cmd === '--components' || cmd === '--refs' || cmd === '--update') {
+	  if (process.argv.length < 4) {
+	    process.argv.push('specs.rst');
+	  }
+	  doc = libspecs.parse(process.argv[3]);
+	  if (cmd === '--verify') {
+	    null;
+	  } else if (cmd === '--components') {
+	    libspecs.print_components(doc);
+	  } else if (cmd === '--refs') {
+	    libspecs.print_refs(doc);
+	  } else if (cmd === '--update') {
+	    updates = [];
+	    while (process.argv.length > 3) {
+	      upd = libspecs.parse(process.argv.shift());
+	      doc.update(upd);
+	      updates.push(upd);
+	    }
+	    libspecs.print(doc);
+	  }
+	} else {
+	  throw Error("Command expected");
+	}
+
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/*
+	
+	Parse specs.rst
+	  - Check indices, build ids, check refs.
+	
+	Update one file using another
+	  - Update descriptions given existing index
+	  - Create new indices for new descriptions
+	
+	Print
+	  - specs.rst
+	  - specs.refs.rst
+	  - specs.res.cites.rst
+	  - specs.yaml
+	 */
+	var Output, Spec, YamlOutput, _, context, fs, path,
+	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+	  hasProp = {}.hasOwnProperty;
+	
+	path = __webpack_require__(6);
+	
+	fs = __webpack_require__(7);
+	
+	_ = __webpack_require__(3);
+	
+	context = __webpack_require__(2);
+	
+	Spec = (function() {
+	  function Spec(description, specs1) {
+	    this.description = description != null ? description : null;
+	    this.specs = specs1 != null ? specs1 : [];
+	  }
+	
+	  Spec.prototype.add = function(spec) {
+	    return specs.push(spec);
+	  };
+	
+	  Spec.root = null;
+	
+	  Spec.add = function(spec) {
+	    return Spec.root.add(spec);
+	  };
+	
+	  return Spec;
+	
+	})();
+	
+	Output = (function() {
+	  function Output() {}
+	
+	  return Output;
+	
+	})();
+	
+	YamlOutput = (function(superClass) {
+	  extend(YamlOutput, superClass);
+	
+	  function YamlOutput() {}
+	
+	  YamlOutput.prototype.write = function() {};
+	
+	  return YamlOutput;
+	
+	})(Output);
+	
+	module.exports.parse = function(filename) {
+	  var lineReader, nstack, stack, suites;
+	  suites = [];
+	  nstack = function(indent) {
+	    if (indent == null) {
+	      indent = '';
+	    }
+	    return {
+	      indent: indent,
+	      specs: [],
+	      description: null,
+	      index: null,
+	      sid: null
+	    };
+	  };
+	  stack = [];
+	  lineReader = __webpack_require__(31).createInterface({
+	    input: fs.createReadStream(filename)
+	  });
+	  return lineReader.on('line', function(line) {
+	    var err, idx, m, nst, root, ws;
+	    if (!line.trim()) {
+	      return;
+	    }
+	    m = line.match(/^\s*([0-9\.]+|-)\s([^\[]*)(\s\[([0-9`_\.]+)\])?$/);
+	    if (m) {
+	      ws = line.match(/^(\s*)/);
+	      root = ws[1].length === 0;
+	      if (root) {
+	        nst = nstack(ws[1]);
+	        nst.sid = m[1];
+	        nst.description = m[2].trim();
+	        stack.push(nst);
+	        suites.push(nst);
+	      }
+	      if (stack[stack.length - 1].indent.length > ws[1].length) {
+	        while (stack[stack.length - 1].indent.length !== ws[1].length) {
+	          stack.pop();
+	        }
+	        console.log('');
+	      }
+	      if (stack[stack.length - 1].indent === ws[1]) {
+	        if (root) {
+	          stack[stack.length - 1].index = suites.length;
+	          console.log('');
+	        } else {
+	          nst = nstack(ws[1]);
+	          nst.index = stack[stack.length - 1].index + 1;
+	          nst.description = m[2].trim();
+	          stack.pop();
+	          if (stack[stack.length - 1].sid === '-') {
+	            nst.sid = String(nst.index) + ".";
+	          } else {
+	            nst.sid = stack[stack.length - 1].sid + String(nst.index) + ".";
+	          }
+	          stack.push(nst);
+	        }
+	        try {
+	          idx = parseInt(m[1].trim('.'), 10);
+	        } catch (error) {
+	          err = error;
+	          null;
+	        }
+	        if (isNaN(idx)) {
+	          idx = '-';
+	        }
+	        if (typeof idx !== 'string' && stack[stack.length - 1].index !== idx) {
+	          throw Error("Index " + stack[stack.length - 1].index + " " + m[1]);
+	        }
+	        return console.log(stack[stack.length - 1].indent + stack[stack.length - 1].sid, stack[stack.length - 1].description);
+	      } else if (stack[stack.length - 1].indent.length < ws[1].length) {
+	        nst = nstack(ws[1]);
+	        nst.description = m[2].trim();
+	        try {
+	          nst.index = parseInt(m[1].trim('.'), 10);
+	        } catch (error) {
+	          err = error;
+	          null;
+	        }
+	        if (isNaN(nst.index)) {
+	          nst.index = suites.length;
+	        }
+	        if (stack[stack.length - 1].sid === '-') {
+	          nst.sid = String(nst.index) + ".";
+	        } else {
+	          nst.sid = stack[stack.length - 1].sid + String(nst.index) + ".";
+	        }
+	        console.log('');
+	        console.log(nst.indent + nst.sid, nst.description);
+	        return stack.push(nst);
+	      }
+	    } else {
+	      return null;
+	    }
+	  });
+	};
+	
+	module.exports.print = function(doc) {};
+	
+	module.exports.print_refs = function(doc) {};
+	
+	module.exports.print_components = function(doc) {};
+
+
+/***/ },
+/* 31 */
+/***/ function(module, exports) {
+
+	module.exports = require("readline");
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/*
+	 */
+	var Promise, Table, _, fs, path, readline;
+	
+	readline = __webpack_require__(31);
+	
+	path = __webpack_require__(6);
+	
+	fs = __webpack_require__(7);
+	
+	_ = __webpack_require__(3);
+	
+	Promise = __webpack_require__(33);
+	
+	Table = (function() {
+	  function Table(headers1, rows) {
+	    this.headers = headers1 != null ? headers1 : {};
+	    this.rows = rows != null ? rows : [];
+	    this.raw = [];
+	  }
+	
+	  Table.parse_headers = function(line) {
+	    var col, headers, i, key, keys, len, w;
+	    headers = [];
+	    keys = line.split(/\s+/);
+	    keys.shift();
+	    for (i = 0, len = keys.length; i < len; i++) {
+	      key = keys[i];
+	      w = line.match(RegExp(key + "\\s*"));
+	      if (!w) {
+	        throw Error(key);
+	      }
+	      col = {
+	        key: key,
+	        offset: w.index,
+	        width: w[0].length,
+	        match: w
+	      };
+	      headers.push(col);
+	      if (headers.length === 1) {
+	        headers[0].offset -= 2;
+	      }
+	    }
+	    return headers;
+	  };
+	
+	  Table.prototype.parse_row = function(line) {
+	    var hd, i, lasthd, len, ref, row;
+	    row = {};
+	    lasthd = this.headers[this.headers.length - 1];
+	    if (line.length > lasthd.offset + lasthd.width) {
+	      lasthd.width = line.length - lasthd.offset;
+	    }
+	    ref = this.headers;
+	    for (i = 0, len = ref.length; i < len; i++) {
+	      hd = ref[i];
+	      row[hd.key] = line.substr(hd.offset, hd.width).trim();
+	    }
+	    this.rows.push(row);
+	    return row;
+	  };
+	
+	  Table.parse = function(filename) {
+	    var table;
+	    table = new Table(null);
+	    return new Promise(function(resolve, reject) {
+	      var lineReader;
+	      lineReader = readline.createInterface({
+	        input: fs.createReadStream(filename)
+	      });
+	      lineReader.on('line', function(line) {
+	        var comment;
+	        if (!line.trim()) {
+	          return;
+	        }
+	        comment = line.match(/^#(.*)$/);
+	        if (comment) {
+	          if (_.isEmpty(table.headers)) {
+	            table.headers = Table.parse_headers(line);
+	          }
+	          return;
+	        }
+	        return table.raw.push(line);
+	      });
+	      return lineReader.on('close', function() {
+	        var i, len, line, ref;
+	        ref = table.raw;
+	        for (i = 0, len = ref.length; i < len; i++) {
+	          line = ref[i];
+	          table.parse_row(line);
+	        }
+	        return resolve(table);
+	      });
+	    });
+	  };
+	
+	  Table.prototype.find = function(col, value) {
+	    var i, len, ref, row;
+	    ref = this.rows;
+	    for (i = 0, len = ref.length; i < len; i++) {
+	      row = ref[i];
+	      if (row[col] === value) {
+	        return row;
+	      }
+	    }
+	  };
+	
+	  return Table;
+	
+	})();
+	
+	module.exports = {};
+	
+	module.exports.Table = Table;
+
+
+/***/ },
+/* 33 */
+/***/ function(module, exports) {
+
+	module.exports = require("bluebird");
+
+/***/ },
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */
 /***/ function(module, exports) {
 
 	
@@ -1277,6 +2069,539 @@ module.exports =
 	    return cb('not found');
 	  }
 	};
+
+
+/***/ },
+/* 42 */
+/***/ function(module, exports) {
+
+	module.exports = function() {
+	  return {
+	    name: 'core'
+	  };
+	};
+
+
+/***/ },
+/* 43 */,
+/* 44 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/*
+	
+	My usecase for context is not that big at the moment.
+	
+	Just inherit the properties and add subcontexts.
+	 */
+	var Context, chai, expect;
+	
+	Context = __webpack_require__(2);
+	
+	chai = __webpack_require__(45);
+	
+	expect = chai.expect;
+	
+	describe('Nodelib context-module', function() {
+	  it('exports a class called Context', function() {
+	    expect(Context.prototype.constructor);
+	    return expect(Context.prototype.constructor.name).to.equal('Context');
+	  });
+	  it('should numerically Id its instances', function() {
+	    var ctx1, ctx2, ctx3;
+	    expect(Context.count()).to.equal(0);
+	    ctx1 = new Context({});
+	    expect(Context.count()).to.equal(1);
+	    expect(ctx1.id()).to.equal('ctx:1');
+	    ctx2 = new Context({});
+	    expect(Context.count()).to.equal(2);
+	    expect(ctx2.id()).to.equal('ctx:2');
+	    ctx3 = new Context({});
+	    expect(Context.count()).to.equal(3);
+	    return expect(ctx3.id()).to.equal('ctx:3');
+	  });
+	  describe('contructor should accept', function() {
+	    it('a seed object', function() {
+	      var ctx;
+	      ctx = new Context({
+	        foo: 'bar'
+	      });
+	      expect(ctx.hasOwnProperty('foo')).to.equal(true);
+	      return expect(ctx.foo).to.equal('bar');
+	    });
+	    return it('a seed object and (super)context property object', function() {
+	      var ctx1, ctx2, init;
+	      ctx1 = new Context({
+	        foo: 'bar'
+	      });
+	      init = {
+	        foo: 'bar2'
+	      };
+	      ctx2 = new Context(init, ctx1);
+	      expect(ctx2.foo).to.equal('bar2');
+	      expect(ctx2.context).to.eql(ctx1);
+	      return expect(ctx1.foo).to.equal('bar');
+	    });
+	  });
+	  describe('instances', function() {
+	    it('should create and track subContexts, and override properties', function() {
+	      var ctx1, ctx2;
+	      ctx1 = new Context({
+	        foo: 'bar'
+	      });
+	      ctx2 = ctx1.getSub({
+	        foo: 'bar2'
+	      });
+	      expect(ctx1.foo).to.equal('bar');
+	      expect(ctx2.foo).to.equal('bar2');
+	      expect(ctx2.context).to.eql(ctx1);
+	      expect(ctx1._subs[0]).to.eql(ctx2);
+	      return expect(ctx2.id()).to.equal('ctx:1.2');
+	    });
+	    it("should inherit property values, but not export values to the super context", function() {
+	      var ctx1, ctx2;
+	      ctx1 = new Context({
+	        foo: 'bar'
+	      });
+	      ctx2 = ctx1.getSub({
+	        x: 9
+	      });
+	      expect(ctx2.foo).to.equal('bar');
+	      ctx1.foo = 'bar2';
+	      expect(ctx1.foo).to.equal('bar2');
+	      expect(ctx2.foo).to.equal('bar2');
+	      expect(ctx1.hasOwnProperty('x')).to.equal(false);
+	      expect(ctx2.hasOwnProperty('x')).to.equal(true);
+	      return expect(ctx2.x).to.equal(9);
+	    });
+	    return describe('can handle path-references', function() {
+	      describe('which dereference', function() {
+	        it('to objects', function() {
+	          var ctx;
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                el: 'baz'
+	              }
+	            }
+	          });
+	          expect(ctx.get('foo')).to.eql({
+	            bar: {
+	              el: 'baz'
+	            }
+	          });
+	          return expect(ctx.get('foo.bar')).to.eql({
+	            el: 'baz'
+	          });
+	        });
+	        it('to values--even if empty', function() {
+	          var ctx;
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                str: '',
+	                int: 0,
+	                bool: false
+	              }
+	            }
+	          });
+	          expect(ctx.get('foo.bar.str')).to.equal('');
+	          expect(ctx.get('foo.bar.int')).to.equal(0);
+	          return expect(ctx.get('foo.bar.bool')).to.equal(false);
+	        });
+	        return it('to objects with unresolved references', function() {
+	          var ctx;
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                $ref: '#/refs/x'
+	              }
+	            },
+	            refs: {
+	              x: 0
+	            }
+	          });
+	          return expect(ctx.get('foo.bar')).to.eql({
+	            $ref: '#/refs/x'
+	          });
+	        });
+	      });
+	      return describe('which resolve', function() {
+	        it('to fully dereferenced objects', function() {
+	          var ctx;
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                $ref: '#/refs/x'
+	              }
+	            },
+	            refs: {
+	              x: {
+	                el: 'baz'
+	              }
+	            }
+	          });
+	          expect(ctx.resolve('foo')).to.eql({
+	            bar: {
+	              el: 'baz'
+	            }
+	          });
+	          return expect(ctx.resolve('foo.bar')).to.eql({
+	            el: 'baz'
+	          });
+	        });
+	        it('to values', function() {
+	          var ctx;
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                el: 'baz'
+	              }
+	            }
+	          });
+	          return expect(ctx.resolve('foo.bar.el')).to.equal('baz');
+	        });
+	        it('to referenced values', function() {
+	          var ctx;
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                $ref: '#/refs/x'
+	              }
+	            },
+	            refs: {
+	              x: 0
+	            }
+	          });
+	          return expect(ctx.resolve('foo.bar')).to.equal(0);
+	        });
+	        it('to values on referenced objects', function() {
+	          var ctx;
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                $ref: '#/refs/x'
+	              }
+	            },
+	            refs: {
+	              x: {
+	                el: 'baz'
+	              }
+	            }
+	          });
+	          expect(ctx.resolve('foo.bar.el')).to.equal('baz');
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                $ref: '#/refs/x'
+	              }
+	            },
+	            refs: {
+	              x: {
+	                el: {
+	                  $ref: '#/refs/el'
+	                }
+	              },
+	              el: 'baz'
+	            }
+	          });
+	          expect(ctx.resolve('foo.bar.el')).to.equal('baz');
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                $ref: '#/refs/x'
+	              }
+	            },
+	            refs: {
+	              x: {
+	                el: {
+	                  $ref: '#/refs/el'
+	                }
+	              },
+	              el: {
+	                x2: {
+	                  $ref: '#/refs/x2'
+	                }
+	              },
+	              x2: 'baz'
+	            }
+	          });
+	          return expect(ctx.resolve('foo.bar.el.x2')).to.equal('baz');
+	        });
+	        it('to objects merged with reference objects', function() {
+	          var ctx;
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                x: 1,
+	                x2: 1,
+	                $ref: '#/refs/x'
+	              }
+	            },
+	            refs: {
+	              x: {
+	                x: 2,
+	                y: 2
+	              }
+	            }
+	          });
+	          expect(ctx.resolve('foo.bar.y')).to.equal(2);
+	          expect(ctx.resolve('foo.bar.x')).to.equal(2);
+	          return expect(ctx.resolve('foo.bar.x2')).to.equal(1);
+	        });
+	        it('to objects merged with reference objects (II)', function() {
+	          var ctx;
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                x: {
+	                  x: 1,
+	                  y: 1
+	                },
+	                y: 1,
+	                z: 1,
+	                $ref: '#/refs/x'
+	              }
+	            },
+	            refs: {
+	              x: {
+	                y: 2,
+	                x: {
+	                  x: 2,
+	                  y: 2
+	                }
+	              }
+	            }
+	          });
+	          expect(ctx.resolve('foo.bar.x')).to.eql({
+	            x: 2,
+	            y: 2
+	          });
+	          expect(ctx.resolve('foo.bar.y')).to.eql(2);
+	          return expect(ctx.resolve('foo.bar.z')).to.eql(1);
+	        });
+	        return it('to fully dereferenced objects', function() {
+	          var ctx, foo, refs;
+	          ctx = new Context({
+	            foo: {
+	              bar: {
+	                $ref: '#/refs/x'
+	              }
+	            },
+	            refs: {
+	              x: {
+	                el: 'baz',
+	                x2: {
+	                  $ref: '#/refs/x2'
+	                }
+	              },
+	              x2: {
+	                int: 0,
+	                bool: false,
+	                x3: {
+	                  $ref: '#/refs/x3'
+	                }
+	              },
+	              x3: 'test'
+	            }
+	          });
+	          foo = {
+	            bar: {
+	              el: 'baz',
+	              x2: {
+	                int: 0,
+	                bool: false,
+	                x3: 'test'
+	              }
+	            }
+	          };
+	          refs = {
+	            x: {
+	              el: 'baz',
+	              x2: {
+	                int: 0,
+	                bool: false,
+	                x3: 'test'
+	              }
+	            },
+	            x2: {
+	              int: 0,
+	              bool: false,
+	              x3: 'test'
+	            },
+	            x3: 'test'
+	          };
+	          expect(ctx.resolve('refs.x3')).to.eql(refs.x3);
+	          expect(ctx.resolve('refs.x2')).to.eql(refs.x2);
+	          expect(ctx.resolve('refs.x')).to.eql(refs.x);
+	          expect(ctx.resolve('foo')).to.eql(foo);
+	          expect(ctx.resolve('foo.bar')).to.eql(foo.bar);
+	          expect(ctx.resolve('foo.bar.el')).to.eql(foo.bar.el);
+	          expect(ctx.resolve('foo.bar.x2')).to.eql(foo.bar.x2);
+	          expect(ctx.resolve('foo.bar.x2.bool')).to.eql(foo.bar.x2.bool);
+	          expect(ctx.resolve('foo.bar.x2.int')).to.eql(foo.bar.x2.int);
+	          return expect(ctx.resolve('foo.bar.x2.x3')).to.eql(foo.bar.x2.x3);
+	        });
+	      });
+	    });
+	  });
+	  beforeEach(function() {
+	    return Context.reset();
+	  });
+	  return afterEach(function() {
+	    return delete ctx;
+	  });
+	});
+
+
+/***/ },
+/* 45 */
+/***/ function(module, exports) {
+
+	module.exports = require("chai");
+
+/***/ },
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var chai, expect, module;
+	
+	module = __webpack_require__(11);
+	
+	chai = __webpack_require__(45);
+	
+	chai.should();
+	
+	expect = chai.expect;
+	
+	describe("Module 'nodelib.module' provides classes and routines to set up an Express application. ", function() {
+	  describe('To do so it has a framework composed of two extensible components.', function() {
+	    describe('First, the core,', function() {
+	      it('which is a prototype for an object', function() {
+	        var obj;
+	        obj = new module.classes.Core({});
+	        return obj.should.be.an.object;
+	      });
+	      describe('that can statically configure itself,', function() {
+	        it('taking paths to the source');
+	        it('optionally using config modules');
+	        return it('by loading the metadatafile in the current directory.');
+	      });
+	      return describe('Core instances have ', function() {
+	        it('a method to load modules onto the core instance ');
+	        return it('and a method to prime and run the application server. ');
+	      });
+	    });
+	    describe('Second is the module', function() {
+	      it('which is a prototype', function() {
+	        var obj;
+	        return obj = new module.classes.Module({});
+	      });
+	      return describe("that can statically configure itself, taking a path to a directory", function() {
+	        it('either containing a standard module layout');
+	        return it('or which has a reserved-name module metadata file. ');
+	      });
+	    });
+	    return beforeEach(function() {
+	      return global.__noderoot = '';
+	    });
+	  });
+	  return describe("To start an express-mvc 0.1 application", function() {
+	    it("it requires a global init. FIXME: fix this somehow. ", function() {
+	      return module.init(process.cwd());
+	    });
+	    it("it requires to load a core component from a module", function() {
+	      var core;
+	      module.init(process.cwd());
+	      core = module.load_core('test/example/core');
+	      expect(core).to.be.an.object;
+	      expect(core.app).to.be.a('undefined').and.to.be.empty;
+	      expect(core.server).to.be.a('undefined').and.to.be.empty;
+	      expect(core.root).to.be.a('undefined').and.to.be.empty;
+	      expect(core.pkg).to.be.a('undefined').and.to.be.empty;
+	      expect(core.config).to.be.a('undefined').and.to.be.empty;
+	      expect(core.meta).to.be.a('undefined').and.to.be.empty;
+	      expect(core.url).to.be.a('undefined').and.to.be.empty;
+	      expect(core.path).to.be.a('undefined').and.to.be.empty;
+	      expect(core.route).to.be.a('object').and.to.be.empty;
+	      expect(core.base).to.be.a('object').and.to.be.empty;
+	      expect(core.controllers).to.be.a('object').and.to.be.empty;
+	      expect(core.routes).to.be.a('object').and.to.be.empty;
+	      expect(core.models).to.be.a('object').and.to.be.empty;
+	      expect(core.params).to.be.a('object').and.to.be.empty;
+	      expect(core.name).to.be.string('core');
+	      return expect(core.meta).to.be.an.object;
+	    });
+	    it("it requires a call to configure the core component");
+	    it("it can load extensions. ");
+	    return it("it finally has a function to start the Express app. ");
+	  });
+	});
+
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/*
+	 */
+	var appMock, chai, expect, moduleMock, route, urlBase;
+	
+	route = __webpack_require__(14);
+	
+	chai = __webpack_require__(45);
+	
+	expect = chai.expect;
+	
+	appMock = {
+	  all: null,
+	  get: null,
+	  put: null,
+	  post: null,
+	  options: null,
+	  "delete": null
+	};
+	
+	urlBase = 'scheme:root/path';
+	
+	moduleMock = {
+	  route: {
+	    name1: {
+	      route: null,
+	      all: null,
+	      get: null,
+	      put: null,
+	      post: null,
+	      options: null,
+	      "delete": null
+	    }
+	  }
+	};
+	
+	describe("Module 'route'", function() {
+	  it("has one principal function applyRoutes", function() {
+	    return expect(route.applyRoutes);
+	  });
+	  describe("works with metadata objects containing a 'route' attribute", function() {
+	    it("the value of which is an object");
+	    describe("that may hold any of the HTTP verbs", function() {
+	      it("with a resolvable named handler");
+	      return it("with a dynamic reference to a callable handler");
+	    });
+	    return it("which may hold the same key to a sub-route");
+	  });
+	  return describe("applies URL route handlers to an Express instance from static or dynamic metadata. ", function() {
+	    it("XXX take an express, urlBase, mock arg, and return an merged route", function() {
+	      var routes;
+	      routes = route.applyRoutes(appMock, urlBase, moduleMock);
+	      return expect(routes.route);
+	    });
+	    it("It can recursively traverse the 'route' key from an object");
+	    it("It can take names of handlers for singleton controllers");
+	    return it("It can take dynamic references to handlers");
+	  });
+	});
 
 
 /***/ }

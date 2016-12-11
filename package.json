@@ -16,10 +16,16 @@
     "url": "https://github.com/dotmpe/nodelib/issues"
   },
   "main": "dist/nodelib.js",
-  "bin": {},
+  "bin": {
+    "nodelib-specs": "./bin/specs.coffee"
+  },
   "scripts": {
-    "build": "grunt build",
+
     "test": "grunt --force lint test",
+
+    "build": "grunt build",
+
+    "update-spec": "sh ./tools/update-spec.sh",
     "src-tree": "tree -I 'node_modules|build|components'",
     "src-files": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' ",
     "src-loc": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' -not -path '*.log' | xargs cat | grep -v '^\\s*$' | wc -l | awk '{print $1}'",
@@ -27,16 +33,17 @@
     "dep-local-all": "find node_modules/ -iname node_modules | xargs /bin/ls -w1 | grep -v '^$' | grep -v 'node_modules' | sort -u | awk '{print $1}'"
   },
   "devDependencies": {
+    "bluebird": "^3.4.6",
     "chai": "^3.1.0",
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.11.1",
     "grunt": "^0.4.5",
-    "grunt-exec": "^1.0.0",
     "grunt-cli": "^1.2.0",
     "grunt-coffeelint": "^0.0.16",
     "grunt-contrib-coffee": "latest",
     "grunt-contrib-jshint": "latest",
     "grunt-contrib-watch": "latest",
+    "grunt-exec": "^1.0.0",
     "grunt-jasmine-node-coffee": "latest",
     "grunt-mocha-test": "^0.12.7",
     "grunt-yamllint": "0.2.0",

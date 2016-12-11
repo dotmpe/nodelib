@@ -98,7 +98,7 @@ describe "Module 'nodelib.module' provides classes and routines to set up
       #core = module.load_core 'test/example/core'
       #core.configure()
       #core.load_modules()
-      # FIXME: euhm.. build or find interrupt mechanism and start this in a 
+      # FIXME: euhm.. build or find interrupt mechanism and start this in a
       #        coroutine core.start()
 
 
