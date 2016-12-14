@@ -1,14 +1,20 @@
 Nodelib
 =======
-:Version: 0.0.5-test+20150718-2033
+:Version: 0.0.5-dev+20161126-0155
 :Status: Development
-:project:
+:dependency status:
+
+  .. image:: https://gemnasium.com/dotmpe/nodelib.png
+     :target: https://gemnasium.com/dotmpe/nodelib
+     :alt: Dependencies
+
+:build status:
 
   .. image:: https://secure.travis-ci.org/dotmpe/nodelib.png
     :target: https://travis-ci.org/dotmpe/nodelib
     :alt: Build
 
-:repository:
+:latest version:
 
   .. image:: https://badge.fury.io/gh/dotmpe%2Fnodelib.png
     :target: http://badge.fury.io/gh/dotmpe%2Fnodelib
@@ -60,9 +66,6 @@ Sitefile.yaml
 
 reader.rst
   - For use with sitefile_
-
-Makefile
-  - Nothing much.
 
 
 ----

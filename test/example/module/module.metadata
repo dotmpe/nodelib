@@ -1,0 +1,14 @@
+
+- type: express-mvc-ext/0.2
+  name: example/module
+  components: []
+
+- type: jade-requirejs-client/0.1
+  # AMD container module ID?
+  name: example/module
+  compile:
+    # Path to AMD sources
+    dir: client
+
+# vim:ft=yaml:
+ 

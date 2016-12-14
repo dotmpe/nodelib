@@ -21,63 +21,55 @@ refToPath = ( ref ) ->
 
 class Context
 
+  ###
+    Obj. hierarchy with dynamic, inherited properties.
+  ###
+
   constructor: ( init, ctx=null ) ->
     @_instance = ++ Context._i
+    # Provide path to super context
     @context = ctx
-    @_defaults = init
+    # XXX unused @_defaults = init
     @_data = {}
     @_subs = []
+    # XXX: re-create all properties from context, needed?
+    # Also what if wait until local is overriden..
     if ctx and ctx._data
-      @prepare_properties ctx._data
-    @prepare_properties init
-    @seed init
+      @prepare_from_obj ctx._data
+    # add properties for, and seed from init into local data
+    @add_data init
 
-  id: ->
-    if @context
-      return @context.id() + '.' + @_instance
-    return 'ctx:' + @_instance
+  id: -> if @context then @context.id() + '.' + @_instance else @_instance
+  toString: -> 'Context:' + @id()
+  isEmpty: -> _.isEmpty @_data and if @context then @context.isEmpty() else true
+  subs: -> @_subs # List subcontexts
 
-  toString: ->
-    #console.log @constructor.name
-    #console.log @path
-    #( @constructor.name +':'+ @path )
-    'Context:'+@path
-
-  isEmpty: ->
-    not _.isEmpty @_data
-
-  # return a getter for property `k`
-  _ctxGetter: ( k ) ->
-    ->
-      if k of @_data
-        @_data[ k ]
-      else if @context?
-        @context[ k ]
-
-  # return a setter for property `k`
-  _ctxSetter: ( k ) ->
-    ( newVal ) ->
-      @_data[ k ] = newVal
-
-  # seed property data from obj
+  # Seed property data from obj
   seed: ( obj ) ->
     for k, v of obj
       @_data[ k ] = v
+    @
 
-  # Create local properties using keys in obj
-  prepare_properties: ( obj ) ->
+  # Create local properties using keys in obj (ignores existing data keys)
+  prepare_from_obj: ( obj ) ->
     for k, v of obj
-      if k of @_data
-        continue
-      @ctx_property k,
-        get: @_ctxGetter( k )
-        set: @_ctxSetter( k )
+      @prepare_property k
+    @
 
-  subs: ->
-    return @_subs
+  prepare_all: ( keys ) ->
+    for k in keys
+      @prepare_property k
+    @
 
-  # get new subcontext:
-  # create new SubContext instance that inherits from current instance
+  prepare_property: ( k ) ->
+    if k of @_data
+      return
+    @_ctx_property k,
+      get: @_ctxGetter( k )
+      set: @_ctxSetter( k )
+    @
+
+  # new subcontext, inherits current instance, optional new or override vars
   getSub: ( init ) ->
     class SubContext extends Context
       constructor: ( init, sup ) ->
@@ -85,6 +77,9 @@ class Context
     sub = new SubContext init, @
     @_subs.push sub
     sub
+
+  # Short cut for adding new attributes from data
+  add_data: ( obj ) -> @prepare_from_obj obj; @seed obj
 
   # get an object by json path reference,
   get: ( path ) ->
@@ -197,11 +192,36 @@ class Context
 
     _.transform c, merge
 
-  ctx_property: ( prop, desc ) ->
+  to_dict: ->
+    d = {}
+    _ctx = @
+    while _ctx
+      d = _.merge d, _ctx._data
+      _ctx = _ctx.context
+    d
+
+
+  ## Private functions
+
+  _ctx_property: ( prop, desc ) ->
     ctx_prop_spec desc
     Object.defineProperty @, prop, desc
 
-  # Class funcs
+  # return a getter for property `k`: returns local data or tries context
+  _ctxGetter: ( k ) ->
+    ->
+      if k of @_data
+        @_data[ k ]
+      else if @context?
+        @context[ k ]
+
+  # return a setter for property `k`: set into local data
+  _ctxSetter: ( k ) ->
+    ( newVal ) ->
+      @_data[ k ] = newVal
+
+
+  ## Class funcs
 
   @count: ->
     return Context._i
@@ -209,9 +229,10 @@ class Context
   @reset: ->
     Context._i = 0
 
+
 # Class vars
 Context.reset()
-Context.name = "context-mpe"
+# XXX: not strict: Context.name = "context-mpe"
 
 module.exports = Context
 

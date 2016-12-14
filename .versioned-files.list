@@ -4,3 +4,6 @@ package.yaml
 src/node/index.coffee
 Rules.nodelib.mk
 test/mocha/context.coffee
+test/mocha/module.coffee
+test/mocha/route.coffee
+features.tab

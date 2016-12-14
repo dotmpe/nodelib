@@ -1,6 +1,7 @@
-# Id: nodelib/0.0.5-test+20150718-2033 src/node/index.coffee
+# Id: nodelib/0.0.5-dev+20161126-0155 src/node/index.coffee
 
-version = "0.0.5-test+20150718-2033" # nodelib
+version = "0.0.5-dev+20161126-0155" # nodelib
+
 
 module.exports =
   Context: require './context'

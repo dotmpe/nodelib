@@ -1,13 +1,13 @@
 {
   "name": "nodelib",
-  "version": "0.0.5-test+20150718-2033",
-  "description": "",
+  "version": "0.0.5-dev+20161126-0155",
+  "description": "Nodelib",
   "homepage": "https://github.com/dotmpe/nodelib",
   "author": "",
   "keywords": [
     "GIT"
   ],
-  "license": "GPLv3",
+  "license": "GPL-3.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/dotmpe/nodelib.git"
@@ -15,10 +15,17 @@
   "bugs": {
     "url": "https://github.com/dotmpe/nodelib/issues"
   },
-  "main": "src/node/index.coffee",
-  "bin": {},
+  "main": "dist/nodelib.js",
+  "bin": {
+    "nodelib-specs": "./bin/specs.coffee"
+  },
   "scripts": {
+
     "test": "grunt --force lint test",
+
+    "build": "grunt build",
+
+    "update-spec": "sh ./tools/update-spec.sh",
     "src-tree": "tree -I 'node_modules|build|components'",
     "src-files": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' ",
     "src-loc": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' -not -path '*.log' | xargs cat | grep -v '^\\s*$' | wc -l | awk '{print $1}'",
@@ -26,18 +33,27 @@
     "dep-local-all": "find node_modules/ -iname node_modules | xargs /bin/ls -w1 | grep -v '^$' | grep -v 'node_modules' | sort -u | awk '{print $1}'"
   },
   "devDependencies": {
+    "bluebird": "^3.4.6",
     "chai": "^3.1.0",
-    "coffee-script": "^1.9.2",
-    "grunt": "latest",
-    "grunt-cli": "latest",
-    "grunt-coffeelint": "latest",
+    "coffee-loader": "^0.7.2",
+    "coffee-script": "^1.11.1",
+    "coffeelint": "^1.15.7",
+    "grunt": "^0.4.5",
+    "grunt-cli": "^1.2.0",
+    "grunt-coffeelint": "^0.0.16",
     "grunt-contrib-coffee": "latest",
     "grunt-contrib-jshint": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-exec": "^1.0.0",
+    "grunt-jasmine-node-coffee": "^0.4.6",
     "grunt-mocha-test": "^0.12.7",
-    "grunt-yamllint": "latest",
+    "grunt-yamllint": "0.2.0",
     "load-grunt-config": "latest",
     "load-grunt-tasks": "latest",
-    "mocha": "^2.2.5"
+    "mocha": "^2.2.5",
+    "webpack": "^1.13.3",
+    "source-map-support": "latest",
+    "gulp": "latest"
   },
   "dependencies": {
     "js-yaml": "^3.2.7",

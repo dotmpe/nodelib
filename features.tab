@@ -1,0 +1,13 @@
+# ID                       CAT   TYPE           DOC REF
+test/mocha/code            0.3
+test/mocha/context         0.1
+test/mocha/metadata        0.8
+test/mocha/mocha-specs     0.9
+test/mocha/module          0.2
+test/mocha/route           0.4   Check
+test/mocha/specs           0.5   Check
+test/mocha/table           0.6   UnitTest
+test/mocha/util            0.7   Check
+# ID                       CAT   TYPE           DOC REF
+# 
+# Id: nodelib/0.0.5-dev+20161126-0155 ReadMe.rst

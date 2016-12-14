@@ -11,7 +11,6 @@ path = require 'path'
 
 _ = require 'lodash'
 uuid = require 'node-uuid'
-Bookshelf = require 'bookshelf'
 
 metadata = require './metadata'
 applyRoutes = require('./route').applyRoutes
@@ -36,38 +35,19 @@ class Component
     {}
 
   configure: ->
-
-
-class Core extends Component
-
-  constructor: (opts) ->
-    super opts
-    @name = @name || 'core'
-
-  configure: ->
-    p = @root || @path
-
-    @name = @name || @meta.name
-
-    if not @controllerPath
-      @controllerPath = path.join p, 'controllers'
-    if not @modelPath
-      @modelPath = path.join p, 'models'
-    if not @viewPath
-      @viewPath = path.join p, 'views'
-
-    @load_models()
+    console.log "TODO component.configure", [
+      @name, @meta, @base, @path, @route ]
     @load_controllers()
 
   load_models: ->
-    knex = @app.get('knex.main')
-    if not knex
-      knex = require('knex')(@config.database.main)
-      @app.set('knex.main', knex)
-      #console.log(chalk.grey('Initialized main DB conn'))
-    # FIXME
-    Base = Bookshelf.initialize(knex)
-    @modelbase = Bookshelf.session = Base
+    #knex = @app.get('knex.main')
+    #if not knex
+    #  knex = require('knex')(@config.database.main)
+    #  @app.set('knex.main', knex)
+    #  #console.log(chalk.grey('Initialized main DB conn'))
+    # FIXME Component.load_models
+    #Base = Bookshelf.initialize(knex)
+    #@modelbase = Bookshelf.session = Base
     # Prepare Bookshelf.{model,collection} registries
     Base.plugin 'registry'
 
@@ -81,8 +61,6 @@ class Core extends Component
       @load_controller_names()
     else if _.isObject( cs ) and not _.isEmpty cs
       @update_controller cs
-
-    @apply_controllers()
 
   load_model: ( name ) ->
     if not @models[name]
@@ -123,6 +101,29 @@ class Core extends Component
       # keep routes at local module
       _.merge @route, updateObj.route
 
+
+class Core extends Component
+
+  constructor: (opts) ->
+    super opts
+    @name = @name || 'core'
+
+  configure: ->
+    p = @root || @path
+
+    @name = @name || @meta.name
+
+    if not @controllerPath
+      @controllerPath = path.join p, 'controllers'
+    if not @modelPath
+      @modelPath = path.join p, 'models'
+    if not @viewPath
+      @viewPath = path.join p, 'views'
+
+    @load_models()
+    @load_controllers()
+    @apply_controllers()
+
   apply_controllers: ->
     # pick of new routes from updateObj
     _.extend @routes, applyRoutes( @app, @url, @ )
@@ -134,7 +135,7 @@ class Core extends Component
       @app.all @url, @base.redirect(defroute)
 
   # static init for core, relay app init to core module, then init
-  @config: ( core_path ) ->
+  @config: ( md, core_path ) ->
     core_file = path.join __noderoot, core_path, 'main'
     core_seed_cb = require core_file
     # Return core opts
@@ -180,7 +181,6 @@ class CoreV01 extends Core
     CoreV01.load_modules
   ###
   load_modules: ->
-    #console.log 'load_modules', @config.modules
     modroot = path.join __noderoot, @config.src || 'src'
     mods = _.extend( [], @config.modules, @meta.modules )
     for modpath in mods
@@ -188,7 +188,8 @@ class CoreV01 extends Core
       mod = ModuleV01.load( @, fullpath )
       mod.configure()
       @modules[ mod.meta.name ] = mod
-      console.log 'loaded module', modpath, mod.meta.name
+      console.log 'Loaded module', modpath, mod.meta.name
+      console.log mod.route
 
   ###
     CoreV01.get_all_components
@@ -202,14 +203,33 @@ class CoreV01 extends Core
     @server.listen @app.get("port"), ->
       console.log "Express server listening on port " + self.app.get("port")
 
+  # Static
+
+  @DEFAULT_METADATA: [
+    type: 'express-mvc-core/0.2'
+  ]
+
+  @SUPPORTED: [ 'express-mvc-core/0.1', 'express-mvc-core/0.2' ]
+
   @load: ( core_path ) ->
-    # TODO sync with Module.load:
-    #md = metadata.load( core_path )
-    #if not md
-    #  md = type: 'express-mvc/0.1'
-    # static configuration
-    opts = Core.config( core_path )
-    new CoreV01( opts )
+    md = metadata.load core_path
+    if !md
+      console.warn "No metadata for core", core_path
+      md = CoreV01.DEFAULT_METADATA
+    for mdc in md
+      if not 'type' of mdc
+        continue
+      if mdc.type in CoreV01.SUPPORTED
+        return CoreV01.load_from_metadata core_path, mdc
+    throw new Error "No known core interface on module at #{core_path}"
+
+  @load_from_metadata: ( core_path, mdc ) ->
+    # XXX sync with module.load
+    CoreClass = CoreV01
+    #md = metadata.resolve_mvc_meta core_path, mdc
+    #CoreClass = module_classes[ md.ext_version ]
+    opts = CoreClass.config [ mdc ], core_path
+    return new CoreClass opts
 
 
 class ModuleV01 extends Component
@@ -230,22 +250,33 @@ class ModuleV01 extends Component
       opts.name = 'ModuleV01'
     super opts
 
-  # Static methods
+  # Static
 
-  # Read module metadata from path, load MVC-ext-type modules
+  @DEFAULT_METADATA: [
+    type: 'express-mvc-ext/0.2'
+  ]
+
+  @SUPPORTED: [ 'express-mvc-ext/0.1', 'express-mvc-ext/0.2' ]
+
   @load: ( core, from_path ) ->
-    md = metadata.load( from_path )
+    md = metadata.load from_path
     if !md
-      console.warn "No module to load from", from_path
-      return
+      console.warn "No metadata for module", from_path
+      md = ModuleV01.DEFAULT_METADATA
     for mdc in md
-      if mdc.type in [ 'express-mvc-ext/0.1', 'express-mvc-ext/0.2' ]
-        md = metadata.resolve_mvc_meta from_path, mdc
-        if !md.controllers
-          console.error "Missing MVC meta for ", mdc
-        ModuleClass = module_classes[ md.ext_version ]
-        opts = ModuleClass.config( core, md, from_path )
-        return new ModuleClass( opts )
+      if not 'type' of mdc
+        continue
+      if mdc.type in ModuleV01.SUPPORTED
+        return ModuleV01.load_from_metadata core, from_path, mdc
+    throw new Error "No known extension interface on module at #{from_path}"
+
+  @load_from_metadata: ( core, from_path, mdc ) ->
+    md = metadata.resolve_mvc_meta from_path, mdc
+    if !md.controllers
+      console.error "Missing MVC meta for ", mdc
+    ModuleClass = module_classes[ md.ext_version ]
+    opts = ModuleClass.config core, md, from_path
+    return new ModuleClass opts
 
   @config: ( core, md, from_path ) ->
     meta: md || name: md.name
@@ -255,6 +286,7 @@ class ModuleV01 extends Component
     app: core.app
     base: core.base
     path: from_path
+
 
 module_classes = {
   '0.1': ModuleV01
