@@ -40,7 +40,7 @@ class Context
     @add_data init
 
   id: -> if @context then @context.id() + '.' + @_instance else @_instance
-  toString: -> 'Context:' + @id
+  toString: -> 'Context:' + @id()
   isEmpty: -> _.isEmpty @_data and if @context then @context.isEmpty() else true
   subs: -> @_subs # List subcontexts
 

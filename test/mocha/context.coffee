@@ -26,13 +26,16 @@ describe 'Nodelib context-module', ->
     expect( Context.count() ).to.equal 0
     ctx1 = new Context {}
     expect( Context.count() ).to.equal 1
-    expect( ctx1.id() ).to.equal 'ctx:1'
+    expect( ctx1.id() ).to.equal 1
+    expect( ctx1.toString() ).to.equal 'Context:1'
     ctx2 = new Context {}
     expect( Context.count() ).to.equal 2
-    expect( ctx2.id() ).to.equal 'ctx:2'
+    expect( ctx2.id() ).to.equal 2
+    expect( ctx2.toString() ).to.equal 'Context:2'
     ctx3 = new Context {}
     expect( Context.count() ).to.equal 3
-    expect( ctx3.id() ).to.equal 'ctx:3'
+    expect( ctx3.id() ).to.equal 3
+    expect( ctx3.toString() ).to.equal 'Context:3'
 
 
   describe 'contructor should accept', ->
@@ -63,7 +66,7 @@ describe 'Nodelib context-module', ->
       # track subcontexts
       expect( ctx1._subs[0] ).to.eql ctx2
       # track subcontext ID
-      expect( ctx2.id() ).to.equal 'ctx:1.2'
+      expect( ctx2.id() ).to.equal '1.2'
 
     it "should inherit property values, but not export values to the super
         context", ->
