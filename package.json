@@ -49,7 +49,7 @@
     "grunt-contrib-jshint": "latest",
     "grunt-contrib-watch": "latest",
     "grunt-exec": "^1.0.0",
-    "grunt-jasmine-node-coffee": "^0.4.6",
+    "grunt-jasmine-node-coffee": "^0.1.4",
     "grunt-mocha-test": "^0.12.7",
     "grunt-yamllint": "0.2.0",
     "load-grunt-config": "latest",
