@@ -82,20 +82,20 @@ describe "Module 'nodelib.module' provides classes and routines to set up
       expect( core.meta ).to.be.an.object
 
 
-    it "it requires a call to configure the core component"
-      #module.init process.cwd()
-      #core = module.load_core 'test/example/core'
+    it "TODO: it requires a call to configure the core component", ->
+      module.init process.cwd()
+      core = module.load_core 'test/example/core'
       #core.configure()
 
-    it "it can load extensions. "
-      #module.init process.cwd()
-      #core = module.load_core 'test/example/core'
+    it "TODO: it can load extensions. ", ->
+      module.init process.cwd()
+      core = module.load_core 'test/example/core'
       #core.configure()
       #core.load_modules()
 
-    it "it finally has a function to start the Express app. "
-      #module.init process.cwd()
-      #core = module.load_core 'test/example/core'
+    it "TODO: it finally has a function to start the Express app. ", ->
+      module.init process.cwd()
+      core = module.load_core 'test/example/core'
       #core.configure()
       #core.load_modules()
       # FIXME: euhm.. build or find interrupt mechanism and start this in a
