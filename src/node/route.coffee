@@ -44,7 +44,9 @@ applyRoutes = (app, root, module) ->
           app[method] url, _.bind h[method], h
         else
           app[method] url, cb
+
   routes
+
 
 module.exports =
 

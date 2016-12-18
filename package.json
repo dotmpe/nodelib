@@ -31,8 +31,8 @@
     "mocha": "mocha --compilers coffee:coffee-script/register test/mocha/*.coffee",
     "mocha-test": "mocha --compilers coffee:coffee-script/register",
     "src-tree": "tree -I 'node_modules|build|components'",
-    "src-files": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' ",
-    "src-loc": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*/.git/*' -not -path '*.log' | xargs cat | grep -v '^\\s*$' | wc -l | awk '{print $1}'",
+    "src-files": "cat .srcignore .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find . -type f ",
+    "src-loc": "cat .gitignore | sed -e 's/\\(.*\\)/-not -path \"*\\1*\" /' | xargs find ./ -type f -not -path '*.log' | xargs cat | grep -v '^\\s*$' | wc -l | awk '{print $1}'",
     "dep-local": "echo node_modules/* | xargs basename | sort -u | awk '{print $1}'",
     "dep-local-all": "find node_modules/ -iname node_modules | xargs /bin/ls -w1 | grep -v '^$' | grep -v 'node_modules' | sort -u | awk '{print $1}'"
   },

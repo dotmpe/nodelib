@@ -90,6 +90,9 @@ module.exports = ( grunt ) ->
       spec_update:
         cmd: "sh ./tools/update-spec.sh"
 
+      tasks_update:
+        cmd: "sh ./tools/tasks.sh"
+
     pkg: grunt.file.readJSON 'package.json'
 
 
