@@ -1,6 +1,6 @@
 Nodelib
 =======
-:Version: 0.0.5-dev+20161126-0155
+:Version: 0.0.5
 :Status: Development
 :dependency status:
 
