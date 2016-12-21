@@ -5,7 +5,7 @@
   id: nodelib
 
   name: nodelib
-  version: 0.0.5 # nodelib
+  version: 0.0.6-dev # nodelib
   environments: [ 'development' ]
 
   vendor: dotmpe
