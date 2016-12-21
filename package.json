@@ -36,6 +36,11 @@
     "dep-local": "echo node_modules/* | xargs basename | sort -u | awk '{print $1}'",
     "dep-local-all": "find node_modules/ -iname node_modules | xargs /bin/ls -w1 | grep -v '^$' | grep -v 'node_modules' | sort -u | awk '{print $1}'"
   },
+  "dependencies": {
+    "js-yaml": "^3.2.7",
+    "lodash": "^3.7.0",
+    "node-uuid": "^1.4.3"
+  },
   "devDependencies": {
     "bluebird": "^3.4.6",
     "chai": "^3.1.0",
@@ -58,10 +63,5 @@
     "webpack": "^1.13.3",
     "source-map-support": "latest",
     "gulp": "latest"
-  },
-  "dependencies": {
-    "js-yaml": "^3.2.7",
-    "lodash": "^3.7.0",
-    "node-uuid": "^1.4.3"
   }
 }
