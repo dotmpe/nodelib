@@ -3,7 +3,7 @@ node_js:
   - "0.12"
 
 branches:
-  only: []
+  not: []
 
 env:
 # default env is development
