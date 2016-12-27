@@ -55,7 +55,7 @@ module.exports =
 
 	var version;
 	
-	version = "0.0.5-dev+20161126-0155";
+	version = "0.0.6-dev";
 	
 	module.exports = {
 	  Context: __webpack_require__(2),
@@ -63,7 +63,7 @@ module.exports =
 	  module: __webpack_require__(11),
 	  route: __webpack_require__(14),
 	  error: __webpack_require__(4),
-	  util: __webpack_require__(41),
+	  util: __webpack_require__(21),
 	  version: version
 	};
 
@@ -95,10 +95,10 @@ module.exports =
 	};
 	
 	refToPath = function(ref) {
-	  if (!ref.match(/#\/.*/)) {
+	  if (!ref.match(/^#\/.*/)) {
 	    throw new Error("Absolute JSON ref only support");
 	  }
-	  return ref.substr(2).replace(/\//g, '.');
+	  return ref.substr(2).replace(/([^\\])\//g, '$1.').replace(/\\\//g, '/');
 	};
 	
 	Context = (function() {
@@ -129,7 +129,7 @@ module.exports =
 	  };
 	
 	  Context.prototype.toString = function() {
-	    return 'Context:' + this.id;
+	    return 'Context:' + this.id();
 	  };
 	
 	  Context.prototype.isEmpty = function() {
@@ -200,25 +200,27 @@ module.exports =
 	    return this.seed(obj);
 	  };
 	
-	  Context.prototype.get = function(path) {
+	  Context.prototype.get = function(p_) {
 	    var c, name, p;
-	    p = path.split('.');
+	    p = p_.replace(/([^\\])\./g, '$1\n').replace(/\\\./, '.').split('\n');
+	    console.log('get', p, p_);
 	    c = this;
 	    while (p.length) {
 	      name = p.shift();
 	      if (name in c) {
 	        c = c[name];
 	      } else {
-	        console.error("no " + name + " of " + path + " in", c);
-	        throw new error.NonExistantPathElementException("Unable to get " + name + " of " + path);
+	        console.error("no " + name + " of " + p_ + " in", c);
+	        throw new error.types.NonExistantPathElementException("Unable to get " + name + " of " + p_);
 	      }
 	    }
 	    return c;
 	  };
 	
-	  Context.prototype.resolve = function(path, defaultValue) {
-	    var _deref, c, name, p, self;
-	    p = path.split('.');
+	  Context.prototype.resolve = function(p_, defaultValue) {
+	    var _deref, c, err, name, p, self;
+	    p = p_.replace(/([^\\])\./g, '$1\n').replace(/\\\./, '.').split('\n');
+	    console.log('resolve', p, p_);
 	    c = self = this;
 	    _deref = function(o) {
 	      var ls, rs;
@@ -233,11 +235,11 @@ module.exports =
 	      try {
 	        c = _deref(c);
 	      } catch (error1) {
-	        error = error1;
+	        err = error1;
 	        if (defaultValue != null) {
 	          return defaultValue;
 	        }
-	        throw error;
+	        throw err;
 	      }
 	    }
 	    while (p.length) {
@@ -251,16 +253,16 @@ module.exports =
 	          try {
 	            c = _deref(c);
 	          } catch (error1) {
-	            error = error1;
+	            err = error1;
 	            if (defaultValue != null) {
 	              return defaultValue;
 	            }
-	            throw error;
+	            throw err;
 	          }
 	        }
 	      } else {
-	        console.error("no " + name + " of " + path + " in", c);
-	        throw new Error("Unable to resolve " + name + " of " + path);
+	        console.error("no " + name + " of " + p_ + " in", c);
+	        throw new Error("Unable to resolve " + name + " of " + p_);
 	      }
 	    }
 	    if (_.isPlainObject(c)) {
@@ -389,8 +391,10 @@ module.exports =
 	  extend(NonExistantPathElementException, superClass);
 	
 	  function NonExistantPathElementException() {
-	    NonExistantPathElementException.__super__.constructor.apply(this, arguments);
+	    return NonExistantPathElementException.__super__.constructor.apply(this, arguments);
 	  }
+	
+	  null;
 	
 	  return NonExistantPathElementException;
 	
@@ -1183,12 +1187,12 @@ module.exports =
 		"./module.coffee": 11,
 		"./route": 14,
 		"./route.coffee": 14,
-		"./specs": 30,
-		"./specs.coffee": 30,
-		"./table": 32,
-		"./table.coffee": 32,
-		"./util": 41,
-		"./util.coffee": 41
+		"./specs": 17,
+		"./specs.coffee": 17,
+		"./table": 19,
+		"./table.coffee": 19,
+		"./util": 21,
+		"./util.coffee": 21
 	};
 	function webpackContext(req) {
 		return __webpack_require__(webpackContextResolve(req));
@@ -1330,7 +1334,9 @@ module.exports =
 	};
 	
 	MochaSpecReader = (function() {
-	  function MochaSpecReader() {
+	  function MochaSpecReader(base) {
+	    this.base = base != null ? base : '../../';
+	    this.base = process.cwd() + '/';
 	    this.specs = {};
 	  }
 	
@@ -1368,7 +1374,7 @@ module.exports =
 	    global.describe = describe.bind(ctx);
 	    global.it = it.bind(ctx);
 	    spec_name = path.basename(file_name, '.coffee');
-	    __webpack_require__(17)("./" + path.join(opts.dirname, spec_name));
+	    __webpack_require__(15)(this.base + path.join(opts.dirname, spec_name));
 	    this.specs[spec_name] = spec;
 	    delete global.before;
 	    delete global.beforeEach;
@@ -1455,231 +1461,6 @@ module.exports =
 /* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var map = {
-		"./Gruntfile": 19,
-		"./Gruntfile.coffee": 19,
-		"./bin/specs": 29,
-		"./bin/specs.coffee": 29,
-		"./src/node/code": 9,
-		"./src/node/code.coffee": 9,
-		"./src/node/context": 2,
-		"./src/node/context.coffee": 2,
-		"./src/node/error": 4,
-		"./src/node/error.coffee": 4,
-		"./src/node/index": 1,
-		"./src/node/index.coffee": 1,
-		"./src/node/metadata": 5,
-		"./src/node/metadata.coffee": 5,
-		"./src/node/mocha-specs": 16,
-		"./src/node/mocha-specs.coffee": 16,
-		"./src/node/module": 11,
-		"./src/node/module.coffee": 11,
-		"./src/node/route": 14,
-		"./src/node/route.coffee": 14,
-		"./src/node/specs": 30,
-		"./src/node/specs.coffee": 30,
-		"./src/node/table": 32,
-		"./src/node/table.coffee": 32,
-		"./src/node/util": 41,
-		"./src/node/util.coffee": 41,
-		"./test/example/core/main": 42,
-		"./test/example/core/main.coffee": 42,
-		"./test/mocha/context": 44,
-		"./test/mocha/context.coffee": 44,
-		"./test/mocha/module": 46,
-		"./test/mocha/module.coffee": 46,
-		"./test/mocha/route": 47,
-		"./test/mocha/route.coffee": 47
-	};
-	function webpackContext(req) {
-		return __webpack_require__(webpackContextResolve(req));
-	};
-	function webpackContextResolve(req) {
-		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
-	};
-	webpackContext.keys = function webpackContextKeys() {
-		return Object.keys(map);
-	};
-	webpackContext.resolve = webpackContextResolve;
-	module.exports = webpackContext;
-	webpackContext.id = 17;
-
-
-/***/ },
-/* 18 */,
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(__dirname) {'use strict';
-	module.exports = function(grunt) {
-	  __webpack_require__(20)(grunt);
-	  grunt.initConfig({
-	    watch: {
-	      coffee: {
-	        files: 'src/node/*.coffee',
-	        tasks: ['coffee:compile', 'exec:es2015_test', 'mochaTest:test']
-	      }
-	
-	      /*
-	      gruntfile:
-	        files: '<%= jshint.gruntfile.src %>'
-	        tasks: ['jshint:gruntfile']
-	      
-	      lib:
-	        files: '<%= jshint.lib.src %>'
-	        tasks: [
-	          'jshint:src'
-	          'nodeunit'
-	        ]
-	      
-	      test:
-	        files: '<%= jshint.test.src %>'
-	        tasks: [
-	          'test'
-	        ]
-	       */
-	    },
-	    coffee: {
-	      compile: {
-	        expand: true,
-	        flatten: true,
-	        cwd: __dirname + "/src/node/",
-	        src: ["*.coffee"],
-	        dest: 'build/js/',
-	        ext: '.js'
-	      }
-	    },
-	    jshint: {
-	      options: {
-	        jshintrc: '.jshintrc'
-	      },
-	      gulpfile: ['gulpfile.js'],
-	      "package": ['*.json']
-	    },
-	    coffeelint: {
-	      options: {
-	        configFile: '.coffeelint.json'
-	      },
-	      gruntfile: ['Gruntfile.coffee'],
-	      app: ['bin/*.coffee', 'src/**/*.coffee', 'test/**/*.coffee']
-	    },
-	    yamllint: {
-	      all: ['Sitefile.yaml', 'package.yaml', '**/*.meta']
-	    },
-	    mochaTest: {
-	      test: {
-	        options: {
-	          reporter: 'spec',
-	          require: 'coffee-script/register',
-	          captureFile: 'mocha.out',
-	          quiet: false,
-	          clearRequireCache: false
-	        },
-	        src: ['test/mocha/*.coffee']
-	      }
-	    },
-	    exec: {
-	      check_version: {
-	        cmd: "git-versioning check"
-	      },
-	      es2015_test: {
-	        cmd: 'node --use_strict test/test.js'
-	      },
-	      gulp_dist_build: {
-	        cmd: "gulp dist-build"
-	      },
-	      spec_update: {
-	        cmd: "sh ./tools/update-spec.sh"
-	      }
-	    },
-	    pkg: grunt.file.readJSON('package.json')
-	  });
-	  grunt.registerTask('lint', ['coffeelint', 'jshint', 'yamllint']);
-	  grunt.registerTask('check', ['exec:check_version', 'lint']);
-	  grunt.registerTask('test', ['mochaTest', 'coffee:compile', 'exec:es2015_test']);
-	  grunt.registerTask('default', ['lint', 'test']);
-	  return grunt.registerTask('build', ["exec:gulp_dist_build", 'exec:spec_update']);
-	};
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, "/"))
-
-/***/ },
-/* 20 */
-/***/ function(module, exports) {
-
-	module.exports = require("load-grunt-tasks");
-
-/***/ },
-/* 21 */,
-/* 22 */,
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var cmd, doc, filename, libmochaspecs, libspecs, libtable, opts, pkg, upd, updates;
-	
-	libmochaspecs = __webpack_require__(16);
-	
-	libspecs = __webpack_require__(30);
-	
-	libtable = __webpack_require__(32);
-	
-	if (process.argv.length === 2) {
-	  process.argv.push('--help');
-	}
-	
-	cmd = process.argv[2];
-	
-	if (cmd === '--version' || cmd === '--help') {
-	  pkg = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../package.json\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
-	  console.log("nodelib-specs/" + pkg.version);
-	} else if (cmd === '--specs') {
-	  if (process.argv.length < 4) {
-	    process.argv.push(libmochaspecs.opts.defaults.format);
-	  }
-	  opts = libmochaspecs.opts.get({
-	    format: process.argv[3]
-	  });
-	  libtable.Table.parse(filename = 'features.tab').then(function(table) {
-	    var reader;
-	    opts.feature_table = table;
-	    reader = libmochaspecs.MochaSpecReader.load_dir(opts);
-	    return libmochaspecs.print_all(reader.specs, opts);
-	  });
-	} else if (cmd === '--verify' || cmd === '--components' || cmd === '--refs' || cmd === '--update') {
-	  if (process.argv.length < 4) {
-	    process.argv.push('specs.rst');
-	  }
-	  doc = libspecs.parse(process.argv[3]);
-	  if (cmd === '--verify') {
-	    null;
-	  } else if (cmd === '--components') {
-	    libspecs.print_components(doc);
-	  } else if (cmd === '--refs') {
-	    libspecs.print_refs(doc);
-	  } else if (cmd === '--update') {
-	    updates = [];
-	    while (process.argv.length > 3) {
-	      upd = libspecs.parse(process.argv.shift());
-	      doc.update(upd);
-	      updates.push(upd);
-	    }
-	    libspecs.print(doc);
-	  }
-	} else {
-	  throw Error("Command expected");
-	}
-
-
-/***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
 	
 	/*
 	
@@ -1724,6 +1505,8 @@ module.exports =
 	    return Spec.root.add(spec);
 	  };
 	
+	  Spec.update = function(doc) {};
+	
 	  return Spec;
 	
 	})();
@@ -1762,7 +1545,7 @@ module.exports =
 	    };
 	  };
 	  stack = [];
-	  lineReader = __webpack_require__(31).createInterface({
+	  lineReader = __webpack_require__(18).createInterface({
 	    input: fs.createReadStream(filename)
 	  });
 	  return lineReader.on('line', function(line) {
@@ -1813,7 +1596,9 @@ module.exports =
 	          idx = '-';
 	        }
 	        if (typeof idx !== 'string' && stack[stack.length - 1].index !== idx) {
-	          throw Error("Index " + stack[stack.length - 1].index + " " + m[1]);
+	          if (idx !== 0) {
+	            throw Error("Index " + stack[stack.length - 1].index + " " + m[1]);
+	          }
 	        }
 	        return console.log(stack[stack.length - 1].indent + stack[stack.length - 1].sid, stack[stack.length - 1].description);
 	      } else if (stack[stack.length - 1].indent.length < ws[1].length) {
@@ -1851,13 +1636,13 @@ module.exports =
 
 
 /***/ },
-/* 31 */
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = require("readline");
 
 /***/ },
-/* 32 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -1865,7 +1650,7 @@ module.exports =
 	 */
 	var Promise, Table, _, fs, path, readline;
 	
-	readline = __webpack_require__(31);
+	readline = __webpack_require__(18);
 	
 	path = __webpack_require__(6);
 	
@@ -1873,7 +1658,7 @@ module.exports =
 	
 	_ = __webpack_require__(3);
 	
-	Promise = __webpack_require__(33);
+	Promise = __webpack_require__(20);
 	
 	Table = (function() {
 	  function Table(headers1, rows) {
@@ -1978,20 +1763,13 @@ module.exports =
 
 
 /***/ },
-/* 33 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = require("bluebird");
 
 /***/ },
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */
+/* 21 */
 /***/ function(module, exports) {
 
 	
@@ -2069,539 +1847,6 @@ module.exports =
 	    return cb('not found');
 	  }
 	};
-
-
-/***/ },
-/* 42 */
-/***/ function(module, exports) {
-
-	module.exports = function() {
-	  return {
-	    name: 'core'
-	  };
-	};
-
-
-/***/ },
-/* 43 */,
-/* 44 */
-/***/ function(module, exports, __webpack_require__) {
-
-	
-	/*
-	
-	My usecase for context is not that big at the moment.
-	
-	Just inherit the properties and add subcontexts.
-	 */
-	var Context, chai, expect;
-	
-	Context = __webpack_require__(2);
-	
-	chai = __webpack_require__(45);
-	
-	expect = chai.expect;
-	
-	describe('Nodelib context-module', function() {
-	  it('exports a class called Context', function() {
-	    expect(Context.prototype.constructor);
-	    return expect(Context.prototype.constructor.name).to.equal('Context');
-	  });
-	  it('should numerically Id its instances', function() {
-	    var ctx1, ctx2, ctx3;
-	    expect(Context.count()).to.equal(0);
-	    ctx1 = new Context({});
-	    expect(Context.count()).to.equal(1);
-	    expect(ctx1.id()).to.equal('ctx:1');
-	    ctx2 = new Context({});
-	    expect(Context.count()).to.equal(2);
-	    expect(ctx2.id()).to.equal('ctx:2');
-	    ctx3 = new Context({});
-	    expect(Context.count()).to.equal(3);
-	    return expect(ctx3.id()).to.equal('ctx:3');
-	  });
-	  describe('contructor should accept', function() {
-	    it('a seed object', function() {
-	      var ctx;
-	      ctx = new Context({
-	        foo: 'bar'
-	      });
-	      expect(ctx.hasOwnProperty('foo')).to.equal(true);
-	      return expect(ctx.foo).to.equal('bar');
-	    });
-	    return it('a seed object and (super)context property object', function() {
-	      var ctx1, ctx2, init;
-	      ctx1 = new Context({
-	        foo: 'bar'
-	      });
-	      init = {
-	        foo: 'bar2'
-	      };
-	      ctx2 = new Context(init, ctx1);
-	      expect(ctx2.foo).to.equal('bar2');
-	      expect(ctx2.context).to.eql(ctx1);
-	      return expect(ctx1.foo).to.equal('bar');
-	    });
-	  });
-	  describe('instances', function() {
-	    it('should create and track subContexts, and override properties', function() {
-	      var ctx1, ctx2;
-	      ctx1 = new Context({
-	        foo: 'bar'
-	      });
-	      ctx2 = ctx1.getSub({
-	        foo: 'bar2'
-	      });
-	      expect(ctx1.foo).to.equal('bar');
-	      expect(ctx2.foo).to.equal('bar2');
-	      expect(ctx2.context).to.eql(ctx1);
-	      expect(ctx1._subs[0]).to.eql(ctx2);
-	      return expect(ctx2.id()).to.equal('ctx:1.2');
-	    });
-	    it("should inherit property values, but not export values to the super context", function() {
-	      var ctx1, ctx2;
-	      ctx1 = new Context({
-	        foo: 'bar'
-	      });
-	      ctx2 = ctx1.getSub({
-	        x: 9
-	      });
-	      expect(ctx2.foo).to.equal('bar');
-	      ctx1.foo = 'bar2';
-	      expect(ctx1.foo).to.equal('bar2');
-	      expect(ctx2.foo).to.equal('bar2');
-	      expect(ctx1.hasOwnProperty('x')).to.equal(false);
-	      expect(ctx2.hasOwnProperty('x')).to.equal(true);
-	      return expect(ctx2.x).to.equal(9);
-	    });
-	    return describe('can handle path-references', function() {
-	      describe('which dereference', function() {
-	        it('to objects', function() {
-	          var ctx;
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                el: 'baz'
-	              }
-	            }
-	          });
-	          expect(ctx.get('foo')).to.eql({
-	            bar: {
-	              el: 'baz'
-	            }
-	          });
-	          return expect(ctx.get('foo.bar')).to.eql({
-	            el: 'baz'
-	          });
-	        });
-	        it('to values--even if empty', function() {
-	          var ctx;
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                str: '',
-	                int: 0,
-	                bool: false
-	              }
-	            }
-	          });
-	          expect(ctx.get('foo.bar.str')).to.equal('');
-	          expect(ctx.get('foo.bar.int')).to.equal(0);
-	          return expect(ctx.get('foo.bar.bool')).to.equal(false);
-	        });
-	        return it('to objects with unresolved references', function() {
-	          var ctx;
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                $ref: '#/refs/x'
-	              }
-	            },
-	            refs: {
-	              x: 0
-	            }
-	          });
-	          return expect(ctx.get('foo.bar')).to.eql({
-	            $ref: '#/refs/x'
-	          });
-	        });
-	      });
-	      return describe('which resolve', function() {
-	        it('to fully dereferenced objects', function() {
-	          var ctx;
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                $ref: '#/refs/x'
-	              }
-	            },
-	            refs: {
-	              x: {
-	                el: 'baz'
-	              }
-	            }
-	          });
-	          expect(ctx.resolve('foo')).to.eql({
-	            bar: {
-	              el: 'baz'
-	            }
-	          });
-	          return expect(ctx.resolve('foo.bar')).to.eql({
-	            el: 'baz'
-	          });
-	        });
-	        it('to values', function() {
-	          var ctx;
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                el: 'baz'
-	              }
-	            }
-	          });
-	          return expect(ctx.resolve('foo.bar.el')).to.equal('baz');
-	        });
-	        it('to referenced values', function() {
-	          var ctx;
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                $ref: '#/refs/x'
-	              }
-	            },
-	            refs: {
-	              x: 0
-	            }
-	          });
-	          return expect(ctx.resolve('foo.bar')).to.equal(0);
-	        });
-	        it('to values on referenced objects', function() {
-	          var ctx;
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                $ref: '#/refs/x'
-	              }
-	            },
-	            refs: {
-	              x: {
-	                el: 'baz'
-	              }
-	            }
-	          });
-	          expect(ctx.resolve('foo.bar.el')).to.equal('baz');
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                $ref: '#/refs/x'
-	              }
-	            },
-	            refs: {
-	              x: {
-	                el: {
-	                  $ref: '#/refs/el'
-	                }
-	              },
-	              el: 'baz'
-	            }
-	          });
-	          expect(ctx.resolve('foo.bar.el')).to.equal('baz');
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                $ref: '#/refs/x'
-	              }
-	            },
-	            refs: {
-	              x: {
-	                el: {
-	                  $ref: '#/refs/el'
-	                }
-	              },
-	              el: {
-	                x2: {
-	                  $ref: '#/refs/x2'
-	                }
-	              },
-	              x2: 'baz'
-	            }
-	          });
-	          return expect(ctx.resolve('foo.bar.el.x2')).to.equal('baz');
-	        });
-	        it('to objects merged with reference objects', function() {
-	          var ctx;
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                x: 1,
-	                x2: 1,
-	                $ref: '#/refs/x'
-	              }
-	            },
-	            refs: {
-	              x: {
-	                x: 2,
-	                y: 2
-	              }
-	            }
-	          });
-	          expect(ctx.resolve('foo.bar.y')).to.equal(2);
-	          expect(ctx.resolve('foo.bar.x')).to.equal(2);
-	          return expect(ctx.resolve('foo.bar.x2')).to.equal(1);
-	        });
-	        it('to objects merged with reference objects (II)', function() {
-	          var ctx;
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                x: {
-	                  x: 1,
-	                  y: 1
-	                },
-	                y: 1,
-	                z: 1,
-	                $ref: '#/refs/x'
-	              }
-	            },
-	            refs: {
-	              x: {
-	                y: 2,
-	                x: {
-	                  x: 2,
-	                  y: 2
-	                }
-	              }
-	            }
-	          });
-	          expect(ctx.resolve('foo.bar.x')).to.eql({
-	            x: 2,
-	            y: 2
-	          });
-	          expect(ctx.resolve('foo.bar.y')).to.eql(2);
-	          return expect(ctx.resolve('foo.bar.z')).to.eql(1);
-	        });
-	        return it('to fully dereferenced objects', function() {
-	          var ctx, foo, refs;
-	          ctx = new Context({
-	            foo: {
-	              bar: {
-	                $ref: '#/refs/x'
-	              }
-	            },
-	            refs: {
-	              x: {
-	                el: 'baz',
-	                x2: {
-	                  $ref: '#/refs/x2'
-	                }
-	              },
-	              x2: {
-	                int: 0,
-	                bool: false,
-	                x3: {
-	                  $ref: '#/refs/x3'
-	                }
-	              },
-	              x3: 'test'
-	            }
-	          });
-	          foo = {
-	            bar: {
-	              el: 'baz',
-	              x2: {
-	                int: 0,
-	                bool: false,
-	                x3: 'test'
-	              }
-	            }
-	          };
-	          refs = {
-	            x: {
-	              el: 'baz',
-	              x2: {
-	                int: 0,
-	                bool: false,
-	                x3: 'test'
-	              }
-	            },
-	            x2: {
-	              int: 0,
-	              bool: false,
-	              x3: 'test'
-	            },
-	            x3: 'test'
-	          };
-	          expect(ctx.resolve('refs.x3')).to.eql(refs.x3);
-	          expect(ctx.resolve('refs.x2')).to.eql(refs.x2);
-	          expect(ctx.resolve('refs.x')).to.eql(refs.x);
-	          expect(ctx.resolve('foo')).to.eql(foo);
-	          expect(ctx.resolve('foo.bar')).to.eql(foo.bar);
-	          expect(ctx.resolve('foo.bar.el')).to.eql(foo.bar.el);
-	          expect(ctx.resolve('foo.bar.x2')).to.eql(foo.bar.x2);
-	          expect(ctx.resolve('foo.bar.x2.bool')).to.eql(foo.bar.x2.bool);
-	          expect(ctx.resolve('foo.bar.x2.int')).to.eql(foo.bar.x2.int);
-	          return expect(ctx.resolve('foo.bar.x2.x3')).to.eql(foo.bar.x2.x3);
-	        });
-	      });
-	    });
-	  });
-	  beforeEach(function() {
-	    return Context.reset();
-	  });
-	  return afterEach(function() {
-	    return delete ctx;
-	  });
-	});
-
-
-/***/ },
-/* 45 */
-/***/ function(module, exports) {
-
-	module.exports = require("chai");
-
-/***/ },
-/* 46 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var chai, expect, module;
-	
-	module = __webpack_require__(11);
-	
-	chai = __webpack_require__(45);
-	
-	chai.should();
-	
-	expect = chai.expect;
-	
-	describe("Module 'nodelib.module' provides classes and routines to set up an Express application. ", function() {
-	  describe('To do so it has a framework composed of two extensible components.', function() {
-	    describe('First, the core,', function() {
-	      it('which is a prototype for an object', function() {
-	        var obj;
-	        obj = new module.classes.Core({});
-	        return obj.should.be.an.object;
-	      });
-	      describe('that can statically configure itself,', function() {
-	        it('taking paths to the source');
-	        it('optionally using config modules');
-	        return it('by loading the metadatafile in the current directory.');
-	      });
-	      return describe('Core instances have ', function() {
-	        it('a method to load modules onto the core instance ');
-	        return it('and a method to prime and run the application server. ');
-	      });
-	    });
-	    describe('Second is the module', function() {
-	      it('which is a prototype', function() {
-	        var obj;
-	        return obj = new module.classes.Module({});
-	      });
-	      return describe("that can statically configure itself, taking a path to a directory", function() {
-	        it('either containing a standard module layout');
-	        return it('or which has a reserved-name module metadata file. ');
-	      });
-	    });
-	    return beforeEach(function() {
-	      return global.__noderoot = '';
-	    });
-	  });
-	  return describe("To start an express-mvc 0.1 application", function() {
-	    it("it requires a global init. FIXME: fix this somehow. ", function() {
-	      return module.init(process.cwd());
-	    });
-	    it("it requires to load a core component from a module", function() {
-	      var core;
-	      module.init(process.cwd());
-	      core = module.load_core('test/example/core');
-	      expect(core).to.be.an.object;
-	      expect(core.app).to.be.a('undefined').and.to.be.empty;
-	      expect(core.server).to.be.a('undefined').and.to.be.empty;
-	      expect(core.root).to.be.a('undefined').and.to.be.empty;
-	      expect(core.pkg).to.be.a('undefined').and.to.be.empty;
-	      expect(core.config).to.be.a('undefined').and.to.be.empty;
-	      expect(core.meta).to.be.a('undefined').and.to.be.empty;
-	      expect(core.url).to.be.a('undefined').and.to.be.empty;
-	      expect(core.path).to.be.a('undefined').and.to.be.empty;
-	      expect(core.route).to.be.a('object').and.to.be.empty;
-	      expect(core.base).to.be.a('object').and.to.be.empty;
-	      expect(core.controllers).to.be.a('object').and.to.be.empty;
-	      expect(core.routes).to.be.a('object').and.to.be.empty;
-	      expect(core.models).to.be.a('object').and.to.be.empty;
-	      expect(core.params).to.be.a('object').and.to.be.empty;
-	      expect(core.name).to.be.string('core');
-	      return expect(core.meta).to.be.an.object;
-	    });
-	    it("it requires a call to configure the core component");
-	    it("it can load extensions. ");
-	    return it("it finally has a function to start the Express app. ");
-	  });
-	});
-
-
-/***/ },
-/* 47 */
-/***/ function(module, exports, __webpack_require__) {
-
-	
-	/*
-	 */
-	var appMock, chai, expect, moduleMock, route, urlBase;
-	
-	route = __webpack_require__(14);
-	
-	chai = __webpack_require__(45);
-	
-	expect = chai.expect;
-	
-	appMock = {
-	  all: null,
-	  get: null,
-	  put: null,
-	  post: null,
-	  options: null,
-	  "delete": null
-	};
-	
-	urlBase = 'scheme:root/path';
-	
-	moduleMock = {
-	  route: {
-	    name1: {
-	      route: null,
-	      all: null,
-	      get: null,
-	      put: null,
-	      post: null,
-	      options: null,
-	      "delete": null
-	    }
-	  }
-	};
-	
-	describe("Module 'route'", function() {
-	  it("has one principal function applyRoutes", function() {
-	    return expect(route.applyRoutes);
-	  });
-	  describe("works with metadata objects containing a 'route' attribute", function() {
-	    it("the value of which is an object");
-	    describe("that may hold any of the HTTP verbs", function() {
-	      it("with a resolvable named handler");
-	      return it("with a dynamic reference to a callable handler");
-	    });
-	    return it("which may hold the same key to a sub-route");
-	  });
-	  return describe("applies URL route handlers to an Express instance from static or dynamic metadata. ", function() {
-	    it("XXX take an express, urlBase, mock arg, and return an merged route", function() {
-	      var routes;
-	      routes = route.applyRoutes(appMock, urlBase, moduleMock);
-	      return expect(routes.route);
-	    });
-	    it("It can recursively traverse the 'route' key from an object");
-	    it("It can take names of handlers for singleton controllers");
-	    return it("It can take dynamic references to handlers");
-	  });
-	});
 
 
 /***/ }
