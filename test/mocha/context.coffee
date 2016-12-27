@@ -16,12 +16,12 @@ expect = chai.expect
 
 describe '0.1.1 Nodelib context-module', ->
 
-  it '0.1.1/1 exports a class called Context', ->
+  it '1 exports a class called Context', ->
 
     expect( Context::constructor )
     expect( Context::constructor.name ).to.equal 'Context'
 
-  it '0.1.1/2 should numerically Id its instances', ->
+  it '2 should numerically Id its instances', ->
 
     expect( Context.count() ).to.equal 0
     ctx1 = new Context {}
@@ -39,13 +39,13 @@ describe '0.1.1 Nodelib context-module', ->
 
 
   describe '0.1.1.1 contructor should accept', ->
-    it '0.1.1.1/1 a seed object', ->
+    it '1 a seed object', ->
 
       ctx = new Context foo: 'bar'
       expect( ctx.hasOwnProperty 'foo' ).to.equal true
       expect( ctx.foo ).to.equal 'bar'
 
-    it '0.1.1.1/2 a seed object and (super)context property object', ->
+    it '2 a seed object and (super)context property object', ->
 
       ctx1 = new Context foo: 'bar'
       init = foo: 'bar2'
@@ -56,7 +56,7 @@ describe '0.1.1 Nodelib context-module', ->
 
 
   describe '0.1.1.2 instances', ->
-    it 'should create and track subContexts, and override properties', ->
+    it '2 should create and track subContexts, and override properties', ->
 
       ctx1 = new Context foo: 'bar'
       ctx2 = ctx1.getSub foo: 'bar2'
@@ -68,7 +68,7 @@ describe '0.1.1 Nodelib context-module', ->
       # track subcontext ID
       expect( ctx2.id() ).to.equal '1.2'
 
-    it "should inherit property values, but not export values to the super
+    it "3 should inherit property values, but not export values to the super
         context", ->
 
       ctx1 = new Context foo: 'bar'
@@ -113,7 +113,7 @@ describe '0.1.1 Nodelib context-module', ->
           
       describe '0.1.1.2.1.2 which resolve', ->
 
-        it './1 to fully dereferenced objects', ->
+        it '1 to fully dereferenced objects', ->
 
           ctx = new Context {
             foo: bar: $ref: '#/refs/x'
@@ -122,19 +122,19 @@ describe '0.1.1 Nodelib context-module', ->
           expect( ctx.resolve 'foo' ).to.eql bar: el: 'baz'
           expect( ctx.resolve 'foo.bar' ).to.eql el: 'baz'
 
-        it './2 to values', ->
+        it '2 to values', ->
 
           ctx = new Context foo: bar: el: 'baz'
           expect( ctx.resolve 'foo.bar.el' ).to.equal 'baz'
 
-        it './3 to referenced values', ->
+        it '3 to referenced values', ->
 
           ctx = new Context
             foo: bar: $ref: '#/refs/x'
             refs: x: 0
           expect( ctx.resolve 'foo.bar' ).to.equal 0
 
-        it './4 to values on referenced objects', ->
+        it '4 to values on referenced objects', ->
 
           ctx = new Context
             foo: bar: $ref: '#/refs/x'
@@ -156,7 +156,7 @@ describe '0.1.1 Nodelib context-module', ->
               x2: 'baz'
           expect( ctx.resolve 'foo.bar.el.x2' ).to.equal 'baz'
 
-        it './5 to objects merged with reference objects', ->
+        it '5 to objects merged with reference objects', ->
 
           ctx = new Context
             foo: bar:
@@ -171,7 +171,7 @@ describe '0.1.1 Nodelib context-module', ->
           expect( ctx.resolve 'foo.bar.x' ).to.equal 2
           expect( ctx.resolve 'foo.bar.x2' ).to.equal 1
 
-        it './6 to objects merged with reference objects (II)', ->
+        it '6 to objects merged with reference objects (II)', ->
 
           ctx = new Context
             foo: bar:
@@ -191,7 +191,7 @@ describe '0.1.1 Nodelib context-module', ->
           expect( ctx.resolve 'foo.bar.y' ).to.eql 2
           expect( ctx.resolve 'foo.bar.z' ).to.eql 1
 
-        it './7 to fully dereferenced objects', ->
+        it '7 to fully dereferenced objects', ->
 
           ctx = new Context
             foo: bar: $ref: '#/refs/x'
@@ -232,6 +232,26 @@ describe '0.1.1 Nodelib context-module', ->
           expect( ctx.resolve 'foo.bar.x2.bool' ).to.eql foo.bar.x2.bool
           expect( ctx.resolve 'foo.bar.x2.int' ).to.eql foo.bar.x2.int
           expect( ctx.resolve 'foo.bar.x2.x3' ).to.eql foo.bar.x2.x3
+
+
+      describe '0.1.1.2.1.1 which may contain paths as keys', ->
+
+        it '1 get/deref', ->
+
+          ctx = new Context x: "foo/bar": 'baz'
+          expect( ctx.get 'x.foo/bar' ).to.eql 'baz'
+
+        it '2 resolves', ->
+
+          ctx = new Context x: "foo/bar": 'baz'
+          expect( ctx.resolve "x.foo/bar" ).to.eql 'baz'
+
+          ctx = new Context {
+            x: "foo/bar": $ref: '#/y/foo\\/bar'
+            y: "foo/bar": 'baz'
+          }
+          expect( ctx.resolve "x.foo/bar" ).to.eql 'baz'
+
 
 
   beforeEach ->
