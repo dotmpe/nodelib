@@ -203,7 +203,6 @@ module.exports =
 	  Context.prototype.get = function(p_) {
 	    var c, name, p;
 	    p = p_.replace(/([^\\])\./g, '$1\n').replace(/\\\./, '.').split('\n');
-	    console.log('get', p, p_);
 	    c = this;
 	    while (p.length) {
 	      name = p.shift();
@@ -220,7 +219,6 @@ module.exports =
 	  Context.prototype.resolve = function(p_, defaultValue) {
 	    var _deref, c, err, name, p, self;
 	    p = p_.replace(/([^\\])\./g, '$1\n').replace(/\\\./, '.').split('\n');
-	    console.log('resolve', p, p_);
 	    c = self = this;
 	    _deref = function(o) {
 	      var ls, rs;

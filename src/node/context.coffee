@@ -88,7 +88,6 @@ class Context
   get: ( p_ ) ->
     p = p_.replace(/([^\\])\./g, '$1\n')
       .replace(/\\\./, '.').split '\n'
-    console.log 'get', p, p_
     c = @
     while p.length
       name = p.shift()
@@ -105,7 +104,6 @@ class Context
   resolve: ( p_, defaultValue ) ->
     p = p_.replace(/([^\\])\./g, '$1\n')
       .replace(/\\\./, '.').split '\n'
-    console.log 'resolve', p, p_
     c = self = @
 
     # resolve an object with $ref key
