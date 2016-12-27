@@ -85,24 +85,25 @@ class Context
   add_data: ( obj ) -> @prepare_from_obj obj; @seed obj
 
   # get an object by json path reference,
-  get: ( path ) ->
-    p = path.split '.'
+  get: ( p_ ) ->
+    p = p_.replace(/([^\\])\./g, '$1\n')
+      .replace(/\\\./, '.').split '\n'
     c = @
     while p.length
       name = p.shift()
       if name of c
         c = c[ name ]
       else
-        console.error "no #{name} of #{path} in", c
+        console.error "no #{name} of #{p_} in", c
         throw new error.types.NonExistantPathElementException(
-          "Unable to get #{name} of #{path}" )
+          "Unable to get #{name} of #{p_}" )
     c
 
   # get an object by json path reference,
   # and resolve all contained references too
-  resolve: ( path, defaultValue ) ->
-
-    p = path.split '.'
+  resolve: ( p_, defaultValue ) ->
+    p = p_.replace(/([^\\])\./g, '$1\n')
+      .replace(/\\\./, '.').split '\n'
     c = self = @
 
     # resolve an object with $ref key
@@ -143,8 +144,8 @@ class Context
             throw err
 
       else
-        console.error "no #{name} of #{path} in", c
-        throw new Error "Unable to resolve #{name} of #{path}"
+        console.error "no #{name} of #{p_} in", c
+        throw new Error "Unable to resolve #{name} of #{p_}"
 
     if _.isPlainObject c
       return @merge c

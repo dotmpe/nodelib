@@ -236,7 +236,7 @@ describe '0.1.1 Nodelib context-module', ->
 
       describe '0.1.1.2.1.1 which may contain paths as keys', ->
 
-        it '1 get/deref', ->
+        it '1 dereferences', ->
 
           ctx = new Context x: "foo/bar": 'baz'
           expect( ctx.get 'x.foo/bar' ).to.eql 'baz'
@@ -252,6 +252,26 @@ describe '0.1.1 Nodelib context-module', ->
           }
           expect( ctx.resolve "x.foo/bar" ).to.eql 'baz'
 
+      describe '0.1.1.2.1.2 which may contain periods as keys', ->
+
+        it '1 dereferences', ->
+
+          ctx = new Context {
+            x: "foo/bar.ext": $ref: '#/y/foo\\/bar'
+            y: "foo/bar": 'baz'
+          }
+          expect( ctx.get "x.foo/bar\\.ext" ).to.eql $ref: '#/y/foo\\/bar'
+
+        it '2 resolves', ->
+
+          ctx = new Context {
+            x: "foo/bar.ext": $ref: '#/y/foo\\/bar'
+            y: "foo/bar": 'baz'
+          }
+          expect( ctx.resolve "x.foo/bar\\.ext" ).to.eql 'baz'
+
+      ###
+      ###
 
 
   beforeEach ->
