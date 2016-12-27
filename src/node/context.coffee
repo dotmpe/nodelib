@@ -88,6 +88,7 @@ class Context
   get: ( p_ ) ->
     p = p_.replace(/([^\\])\./g, '$1\n')
       .replace(/\\\./, '.').split '\n'
+    print 'get', p, p_
     c = @
     while p.length
       name = p.shift()
@@ -104,6 +105,7 @@ class Context
   resolve: ( p_, defaultValue ) ->
     p = p_.replace(/([^\\])\./g, '$1\n')
       .replace(/\\\./, '.').split '\n'
+    print 'resolve', p, p_
     c = self = @
 
     # resolve an object with $ref key
