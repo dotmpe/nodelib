@@ -1,7 +1,9 @@
 
-class NonExistantPathElementException extends Error then constructor: -> super
+class NonExistantPathElementException extends Error
+  null
 
 module.exports =
   types:
     NonExistantPathElementException: NonExistantPathElementException
+
 

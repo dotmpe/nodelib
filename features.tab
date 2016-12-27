@@ -9,5 +9,7 @@ test/mocha/specs           0.5   Check
 test/mocha/table           0.6   UnitTest
 test/mocha/util            0.7   Check
 # ID                       CAT   TYPE           DOC REF
+#
+# See bin/specs.coffee
 # 
 # Id: nodelib/0.0.6-dev ReadMe.rst

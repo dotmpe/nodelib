@@ -21,7 +21,7 @@
   },
   "scripts": {
 
-    "test": "grunt --force lint test",
+    "test": "grunt lint test",
 
     "build": "grunt build",
 

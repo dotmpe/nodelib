@@ -15,9 +15,12 @@ ctx_prop_spec = ( desc ) ->
     configurable: true
 
 refToPath = ( ref ) ->
-  if not ref.match /#\/.*/
+  if not ref.match /^#\/.*/
     throw new Error "Absolute JSON ref only support"
-  ref.substr(2).replace /\//g, '.'
+  ref.substr(2)
+    .replace(/([^\\])\//g, '$1.')
+    .replace(/\\\//g, '/')
+
 
 class Context
 
@@ -91,7 +94,7 @@ class Context
         c = c[ name ]
       else
         console.error "no #{name} of #{path} in", c
-        throw new error.NonExistantPathElementException(
+        throw new error.types.NonExistantPathElementException(
           "Unable to get #{name} of #{path}" )
     c
 
@@ -114,15 +117,16 @@ class Context
     if '$ref' of c
       try
         c = _deref c
-      catch error
+      catch err
         if defaultValue?
           return defaultValue
-        throw error
+        throw err
 
     while p.length
 
       # replace current with sub at next path element
       name = p.shift()
+
       if name of c
         c = c[ name ]
 
@@ -133,10 +137,10 @@ class Context
         if '$ref' of c
           try
             c = _deref c
-          catch error
+          catch err
             if defaultValue?
               return defaultValue
-            throw error
+            throw err
 
       else
         console.error "no #{name} of #{path} in", c
