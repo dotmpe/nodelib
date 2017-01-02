@@ -75,7 +75,7 @@ module.exports = ( grunt ) ->
           require: 'coffee-script/register'
           captureFile: 'mocha.out'
           quiet: false
-          clearRequireCache: false
+          clearRequireCache: false # do explicitly as needed
         src: ['test/mocha/*.coffee']
 
     exec:

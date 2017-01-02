@@ -1,19 +1,29 @@
 {
   "name": "nodelib",
-  "version": "0.0.6-dev",
   "description": "Nodelib",
+  "version": "0.0.6-dev",
   "homepage": "https://github.com/dotmpe/nodelib",
-  "author": "",
+  "author": "B. van Berkum <dev@dotmpe.com>",
   "keywords": [
     "GIT"
   ],
-  "license": "GPL-3.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/dotmpe/nodelib.git"
   },
   "bugs": {
     "url": "https://github.com/dotmpe/nodelib/issues"
+  },
+  "license": "GPL-3.0",
+  "licenses": [
+    {
+      "type": "GPL-3.0",
+      "url": "https://github.com/dotmpe/invidia/blob/master/LICENSE-GPLv3"
+    }
+  ],
+  "contributors": [],
+  "engines": {
+    "node": ">= 0.12.0"
   },
   "main": "dist/nodelib.js",
   "bin": {
@@ -43,9 +53,9 @@
   },
   "devDependencies": {
     "bluebird": "^3.4.6",
-    "chai": "^3.1.0",
+    "chai": "^3.5.0",
     "coffee-loader": "^0.7.2",
-    "coffee-script": "^1.11.1",
+    "coffee-script": "^1.12.2",
     "coffeelint": "^1.15.7",
     "grunt": "^0.4.5",
     "grunt-cli": "^1.2.0",
