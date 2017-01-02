@@ -148,8 +148,10 @@ class Context
         throw new Error "Unable to resolve #{name} of #{p_}"
 
     if _.isPlainObject c
-      return @merge c
-
+      x = @merge c
+      if x.$ref
+        return x.$ref
+      return x
     c
 
   # XXX drop $ref from return value
@@ -168,19 +170,24 @@ class Context
     self = @
     # recursively replace $ref: '..' with dereferenced value
     # XXX this starts top-down, but forgets context. may need to globalize
+    mergeDeref = ( value ) ->
+      deref = self.get refToPath value.$ref
+      if _.isPlainObject deref # recurse
+        merged = self.merge deref
+        delete value.$ref
+        value = _.merge value, merged
+      else
+        value = deref
     merge = ( result, value, key ) ->
+      if '$ref' is key
+        value = mergeDeref $ref: value
+        return
       if _.isArray value
         for item, index in value
           merge value, item, index
       else if _.isPlainObject value
         if '$ref' of value
-          deref = self.get refToPath value.$ref
-          if _.isPlainObject deref
-            merged = self.merge deref
-            delete value.$ref
-            value = _.merge value, merged
-          else
-            value = deref
+          value = mergeDeref value
         else
           for key2, value2 of value
             merge value, value2, key2
