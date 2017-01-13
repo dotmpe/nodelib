@@ -216,8 +216,26 @@ module.exports =
 	    return c;
 	  };
 	
+	  Context.prototype.put = function(p_, v) {
+	    var c, name, p;
+	    p = p_.replace(/([^\\])\./g, '$1\n').replace(/\\\./, '.').split('\n');
+	    c = this;
+	    while (p.length - 1) {
+	      name = p.shift();
+	      if (name in c) {
+	        c = c[name];
+	      } else {
+	        console.error("no " + name + " of " + p_ + " in", c);
+	        throw new error.types.NonExistantPathElementException("Unable to get " + name + " of " + p_);
+	      }
+	    }
+	    name = p.shift();
+	    c[name] = v;
+	    return null;
+	  };
+	
 	  Context.prototype.resolve = function(p_, defaultValue) {
-	    var _deref, c, err, name, p, self;
+	    var _deref, c, err, name, p, self, x;
 	    p = p_.replace(/([^\\])\./g, '$1\n').replace(/\\\./, '.').split('\n');
 	    c = self = this;
 	    _deref = function(o) {
@@ -264,7 +282,11 @@ module.exports =
 	      }
 	    }
 	    if (_.isPlainObject(c)) {
-	      return this.merge(c);
+	      x = this.merge(c);
+	      if (x.$ref) {
+	        return x.$ref;
+	      }
+	      return x;
 	    }
 	    return c;
 	  };
@@ -286,10 +308,27 @@ module.exports =
 	  };
 	
 	  Context.prototype.merge = function(c) {
-	    var merge, self;
+	    var merge, mergeDeref, self;
 	    self = this;
+	    mergeDeref = function(value) {
+	      var deref, merged;
+	      deref = self.get(refToPath(value.$ref));
+	      if (_.isPlainObject(deref)) {
+	        merged = self.merge(deref);
+	        delete value.$ref;
+	        return value = _.merge(value, merged);
+	      } else {
+	        return value = deref;
+	      }
+	    };
 	    merge = function(result, value, key) {
-	      var deref, i, index, item, key2, len, merged, value2;
+	      var i, index, item, key2, len, value2;
+	      if ('$ref' === key) {
+	        value = mergeDeref({
+	          $ref: value
+	        });
+	        return;
+	      }
 	      if (_.isArray(value)) {
 	        for (index = i = 0, len = value.length; i < len; index = ++i) {
 	          item = value[index];
@@ -297,14 +336,7 @@ module.exports =
 	        }
 	      } else if (_.isPlainObject(value)) {
 	        if ('$ref' in value) {
-	          deref = self.get(refToPath(value.$ref));
-	          if (_.isPlainObject(deref)) {
-	            merged = self.merge(deref);
-	            delete value.$ref;
-	            value = _.merge(value, merged);
-	          } else {
-	            value = deref;
-	          }
+	          value = mergeDeref(value);
 	        } else {
 	          for (key2 in value) {
 	            value2 = value[key2];
