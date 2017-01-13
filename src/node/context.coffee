@@ -99,6 +99,21 @@ class Context
           "Unable to get #{name} of #{p_}" )
     c
 
+  set: ( p_, v ) ->
+    p = p_.replace(/([^\\])\./g, '$1\n')
+      .replace(/\\\./, '.').split '\n'
+    c = @
+    while p.length-1
+      name = p.shift()
+      if name of c
+        c = c[ name ]
+      else
+        console.error "no #{name} of #{p_} in", c
+        throw new error.types.NonExistantPathElementException(
+          "Unable to get #{name} of #{p_}" )
+    name = p.shift()
+    c[name] = v
+
   # get an object by json path reference,
   # and resolve all contained references too
   resolve: ( p_, defaultValue ) ->
