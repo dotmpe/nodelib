@@ -286,6 +286,29 @@ describe '0.1.1 Nodelib context-module', ->
           expect( ctx.merge foo: bar: $ref: '#/b/c' ).to.eql foo: bar: 2
 
 
+      describe '0.1.1.2.1.2 in put actions, to set data', ->
+
+        it "1. takes simple paths and scalars", ->
+          ctx = new Context {
+            a: 1
+            b:
+              c: 2
+          }
+          ctx.put 'b.c', 3
+          expect( ctx.b.c ).to.eql 3
+          ctx.add_data d: e: f: null
+          ctx.put 'd.e.f', 11
+          expect( ctx.d.e.f ).to.eql 11
+
+        it "2. takes simple paths and lists", ->
+          ctx = new Context path: to: list: [ 1, 2, 3 ]
+          ctx.put 'path.to.list', [ 4 ]
+          expect( ctx.path.to.list ).to.eql [ 4 ]
+
+        it "3. raises undefined errors", ->
+        it "4. raises type errors", ->
+
+
   beforeEach ->
     Context.reset()
 

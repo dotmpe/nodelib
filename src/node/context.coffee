@@ -99,7 +99,7 @@ class Context
           "Unable to get #{name} of #{p_}" )
     c
 
-  set: ( p_, v ) ->
+  put: ( p_, v ) ->
     p = p_.replace(/([^\\])\./g, '$1\n')
       .replace(/\\\./, '.').split '\n'
     c = @
@@ -113,6 +113,7 @@ class Context
           "Unable to get #{name} of #{p_}" )
     name = p.shift()
     c[name] = v
+    null
 
   # get an object by json path reference,
   # and resolve all contained references too
