@@ -26,6 +26,7 @@ deploy:
   - provider: npm
     on:
       tags: true
+    email: dev@dotmpe.com
     api_key:
-      secure: Tk2YrZF2+gq1BNO8KR61JW4E4T0U/7/hr5ME+XP8iIgW2IMrljgwLNRfH1tzh/9+7D2Tcybxs5QcJgPwP+aSxvS1GpEwCXPw02TB7xgAtrD7CXB05aBovQc4v4mT6f84rfB50w0LWhG9DuIVX8K7NbDYB0qRhAx90STegii8ols=
+      secure: ozkTo57ECFdtL6/1z7sgd3mea+t78vP6p8fSQZw6lS4Cut/1Lgf4Pqi+8hhO4keCb9iPd7SS4t05cMVIU4mBRFtmZAMMLwVIBti4a+288AoEH3ZFjyznTfdkYI7GhDwSHn+9YWMbk27/Mwzdckf/X2p3NKAqxgh8upKKndXnjro=
 

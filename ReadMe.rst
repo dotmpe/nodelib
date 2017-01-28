@@ -1,6 +1,6 @@
 Nodelib
 =======
-:Version: 0.0.6-test
+:Version: 0.0.6-test3
 :Status: Testing
 :dependency status:
 
