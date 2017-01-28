@@ -15,7 +15,8 @@ env:
 
 branches:
   only: []
-  not: []
+  not:
+    - dev
 
 notifications:
   email:
