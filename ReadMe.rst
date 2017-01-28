@@ -1,7 +1,7 @@
 Nodelib
 =======
-:Version: 0.0.6-dev
-:Status: Development
+:Version: 0.0.6-test
+:Status: Testing
 :dependency status:
 
   .. image:: https://gemnasium.com/dotmpe/nodelib.png

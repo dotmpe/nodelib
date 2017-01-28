@@ -1,11 +1,11 @@
 {
-  "name": "nodelib",
+  "name": "nodelib-mpe",
   "description": "Nodelib",
-  "version": "0.0.6-dev",
+  "version": "0.0.6-test",
   "homepage": "https://github.com/dotmpe/nodelib",
   "author": "B. van Berkum <dev@dotmpe.com>",
   "keywords": [
-    "GIT"
+    "GIT-mpe"
   ],
   "repository": {
     "type": "git",
