@@ -50,7 +50,7 @@
     "js-yaml": "^3.2.7",
     "lodash": "^3.7.0",
     "node-uuid": "^1.4.3",
-    "source-map-support": "latest"
+    "source-map-support": "^0.4.10"
   },
   "devDependencies": {
     "bluebird": "^3.4.6",

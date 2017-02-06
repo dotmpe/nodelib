@@ -8,7 +8,7 @@ node_js:
   - "6.1"
 
 env:
-# default env is development
+  # default env is development
 #  - NODE_ENV=
   - NODE_ENV=testing
 #  - NODE_ENV=production
