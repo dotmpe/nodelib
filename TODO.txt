@@ -1,0 +1,35 @@
+FIXME: if triggered, need a trigger src_name:ReadMe.rst src_line:53 _id:FIXME
+# XXX: GIT publish src_name:Rules.git-versioning.shared.mk src_line:30 _id:Rules.git-versioning.shared.mk:30
+1. it requires a global init. FIXME: fix this somehow. src_name:specs.rst src_line:70 _id:specs.rst:70
+1. XXX take an express, urlBase, mock arg, and return an merged route src_name:specs.rst src_line:92 _id:specs.rst:92
+# XXX unused @_defaults = init src_name:src/node/context.coffee src_line:35 _id:src/node/context.coffee:35
+# XXX: re-create all properties from context, needed? src_name:src/node/context.coffee src_line:38 _id:src/node/context.coffee:38
+# XXX drop $ref from return value src_name:src/node/context.coffee src_line:173 _id:src/node/context.coffee:173
+# XXX this starts top-down, but forgets context. may need to globalize src_name:src/node/context.coffee src_line:188 _id:src/node/context.coffee:188
+# XXX: not strict: Context.name = "context-mpe" src_name:src/node/context.coffee src_line:263 _id:src/node/context.coffee:263
+# TODO: metafile should support various directory formats src_name:src/node/metadata.coffee src_line:23 _id:src/node/metadata.coffee:23
+# XXX: need two lines to print list attr, iow. add start_it method src_name:src/node/mocha-specs.coffee src_line:93 _id:src/node/mocha-specs.coffee:93
+console.log "TODO component.configure", [ src_name:src/node/module.coffee src_line:38 _id:src/node/module.coffee:38
+# FIXME Component.load_models src_name:src/node/module.coffee src_line:48 _id:src/node/module.coffee:48
+| XXX what to use for models? src_name:src/node/module.coffee src_line:152 _id:src/node/module.coffee:152
+# XXX sync with module.load src_name:src/node/module.coffee src_line:227 _id:src/node/module.coffee:227
+# XXX Init one-off controller instance to handle str-spec callback.. src_name:src/node/route.coffee src_line:8 _id:src/node/route.coffee:8
+it "it requires a global init. FIXME: fix this somehow. ", -> src_name:test/mocha/module.coffee src_line:60 _id:test/mocha/module.coffee:60
+it "TODO: it requires a call to configure the core component", -> src_name:test/mocha/module.coffee src_line:85 _id:test/mocha/module.coffee:85
+it "TODO: it can load extensions. ", -> src_name:test/mocha/module.coffee src_line:90 _id:test/mocha/module.coffee:90
+it "TODO: it finally has a function to start the Express app. ", -> src_name:test/mocha/module.coffee src_line:96 _id:test/mocha/module.coffee:96
+# FIXME: euhm.. build or find interrupt mechanism and start this in a src_name:test/mocha/module.coffee src_line:101 _id:test/mocha/module.coffee:101
+it "XXX take an express, urlBase, mock arg, and return an merged route", -> src_name:test/mocha/route.coffee src_line:51 _id:test/mocha/route.coffee:51
+| grep -v '<TODO>.<txt>'  | grep -v '<TODO>.<list>' tools/tags.sh:41:# TODO: should move script into pd or lst, once excludes are loaded src_name:tools/sh/tags-filter.sh src_line:5 tools/sh/tags-filter.sh:6: _id:tools/sh/tags-filter.sh:5
+# XXX: GIT publish src_name:Rules.git-versioning.shared.mk src_line:30 _id:Rules.git-versioning.shared.mk:30
+1. XXX take an express, urlBase, mock arg, and return an merged route src_name:specs.rst src_line:92 _id:specs.rst:92
+# XXX unused @_defaults = init src_name:src/node/context.coffee src_line:35 _id:src/node/context.coffee:35
+# XXX: re-create all properties from context, needed? src_name:src/node/context.coffee src_line:38 _id:src/node/context.coffee:38
+# XXX drop $ref from return value src_name:src/node/context.coffee src_line:173 _id:src/node/context.coffee:173
+# XXX this starts top-down, but forgets context. may need to globalize src_name:src/node/context.coffee src_line:188 _id:src/node/context.coffee:188
+# XXX: not strict: Context.name = "context-mpe" src_name:src/node/context.coffee src_line:263 _id:src/node/context.coffee:263
+# XXX: need two lines to print list attr, iow. add start_it method src_name:src/node/mocha-specs.coffee src_line:93 _id:src/node/mocha-specs.coffee:93
+| XXX what to use for models? src_name:src/node/module.coffee src_line:152 _id:src/node/module.coffee:152
+# XXX sync with module.load src_name:src/node/module.coffee src_line:227 _id:src/node/module.coffee:227
+# XXX Init one-off controller instance to handle str-spec callback.. src_name:src/node/route.coffee src_line:8 _id:src/node/route.coffee:8
+it "XXX take an express, urlBase, mock arg, and return an merged route", -> src_name:test/mocha/route.coffee src_line:51 _id:test/mocha/route.coffee:51

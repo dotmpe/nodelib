@@ -55,7 +55,7 @@ module.exports =
 
 	var version;
 	
-	version = "0.0.6-dev";
+	version = "0.0.7-dev";
 	
 	module.exports = {
 	  Context: __webpack_require__(2),
@@ -77,7 +77,7 @@ module.exports =
 	A coffeescript implementation of a context
 	with inheritance and override.
 	
-	See also dotmpe/invidia for JS
+	See also bvberkum/invidia for JS
 	 */
 	var Context, _, ctx_prop_spec, error, refToPath,
 	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -178,6 +178,11 @@ module.exports =
 	    return this;
 	  };
 	
+	  Context.prototype.add_data = function(obj) {
+	    this.prepare_from_obj(obj);
+	    return this.seed(obj);
+	  };
+	
 	  Context.prototype.getSub = function(init) {
 	    var SubContext, sub;
 	    SubContext = (function(superClass) {
@@ -193,11 +198,6 @@ module.exports =
 	    sub = new SubContext(init, this);
 	    this._subs.push(sub);
 	    return sub;
-	  };
-	
-	  Context.prototype.add_data = function(obj) {
-	    this.prepare_from_obj(obj);
-	    return this.seed(obj);
 	  };
 	
 	  Context.prototype.get = function(p_) {

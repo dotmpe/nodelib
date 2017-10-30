@@ -4,8 +4,8 @@ src/
   node/
     context.coffee
       A context object to hold properties and create sub-contexts.
-    index.coffee
-      ..
+
+    .. image:: assets/nodelib-deps.svg
 
 test/
   jasmine/
@@ -39,6 +39,3 @@ package
 
 Sitefile.yaml
   - Metadata for documentation browser sitefile
-
-reader.rst
-  - For use with sitefile

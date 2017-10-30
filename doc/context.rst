@@ -112,22 +112,23 @@ A namespace is nice, unless it gets in the way::
   sudo systemctl ...
 
 It's not bad, but not always that great either to get forced into predefined
-namespaces. And it can get out of hand. Have a try navigating the folders that
-your OS' package manager uses for example.
+namespaces. It can get out of hand. Have a try navigating the folders that
+your OS' package manager uses for example. Less is more.
 
 More to the point, standardization is important. Even if clumsily done.
 And it should be encouraged always\ [#]_. But there's also a little flexibility
-needed if working with namespaces.
+needed if working with namespaces build into our language or environment.
 
 .. [#] https://news.ycombinator.com/item?id=3520132
 
 Part of it is addressed perhaps by using a default or current working context.
-E.g. that could solves the issues of / vs. ~/ and many more.
-The meaning of 'index'
+And relative paths too.
+E.g. that solves some of the issues of e.g. / vs. ~/ and many more.
 
+Symbols.
 Aliases come in many forms. An alias is essentially a virtual remount of a
-single leaf or subtree. Iow. it transposes a reference to one path at another,
-new path. Either a symlink, but also an import or include share a similar
+single leaf, or subtree. It transposes a reference targetting one path to
+another new path. A symlink, but also an import or include share a similar
 effect, the localname 'name' has one real and one new virtual location::
 
   name.html -> ../.build/name.html
@@ -143,7 +144,12 @@ namespaces into one.
 
 For contained, non-overlapping hierarchies such as filesystems traditionally are
 this makes sense. But with domain data this does not. Besides multi-user,
-multi-host considerations, its just wrong to assume ``/boot`` or ``/root`` mean
-the same to everyone. Besides the customer is king right... Yet leaving aside
-the choice of OS, can't we not say something more meaningful and informative
-though about our work instead of having to say, 'here is my bunch of files'?
+multi-host considerations, its wrong to assume ``/boot`` or ``/root`` mean
+the same to everyone or in evey context. Besides the customer is king right.
+Leaving aside the choice of OS, can't we not say something more meaningful and
+informative though about our work instead of having to say, 'here is my bunch
+of files'?
+
+Conclusion
+----------
+

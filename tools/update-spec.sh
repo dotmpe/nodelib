@@ -46,4 +46,3 @@ $bin --verify $2 && {
   echo "Invalid specs doc produced" >&2
   exit 1
 }
-

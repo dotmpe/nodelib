@@ -8,7 +8,7 @@
   version: 0.0.7-dev # nodelib
   environments: [ 'development' ]
 
-  vendor: dotmpe
+  vendor: bvberkum
   distribution: public
   license: GPL-3.0
 

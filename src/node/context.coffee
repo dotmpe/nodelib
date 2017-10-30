@@ -2,7 +2,7 @@
 A coffeescript implementation of a context
 with inheritance and override.
 
-See also dotmpe/invidia for JS
+See also bvberkum/invidia for JS
 ###
 _ = require 'lodash'
 
