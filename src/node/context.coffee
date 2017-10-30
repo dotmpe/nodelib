@@ -72,6 +72,9 @@ class Context
       set: @_ctxSetter( k )
     @
 
+  # Short cut for adding new attributes from data
+  add_data: ( obj ) -> @prepare_from_obj obj; @seed obj
+
   # new subcontext, inherits current instance, optional new or override vars
   getSub: ( init ) ->
     class SubContext extends Context
@@ -80,9 +83,6 @@ class Context
     sub = new SubContext init, @
     @_subs.push sub
     sub
-
-  # Short cut for adding new attributes from data
-  add_data: ( obj ) -> @prepare_from_obj obj; @seed obj
 
   # get an object by json path reference,
   get: ( p_ ) ->

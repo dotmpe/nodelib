@@ -19,6 +19,8 @@
     install: "npm:install"
 
     tasks:
+      grep-filter: ./tools/sh/tags-filter.sh
+      document: TODO.txt
       tags:
         - TODO # tasks:no-check
         - XXX # tasks:no-check

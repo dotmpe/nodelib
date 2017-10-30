@@ -1,5 +1,10 @@
 #!/usr/bin/env sitefile
 sitefile: 0.0.3-dev
+upstream: '*'
+packages: 
+  - 'sitefile/context.coffee'
+  - 'cors.coffee'
+
 routes:
   '': redir:reader
   index: redir:ReadMe
