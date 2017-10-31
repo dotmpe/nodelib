@@ -1,0 +1,14 @@
+{
+	"fontSize": "10px",
+  "backgroundColor": "white",
+  "nodeColor": "grey",
+  "noDependencyColor": "black",
+	"graphVizOptions": {
+		"N": {
+			"shape": "record"
+    },
+		"G": {
+			"rankdir": "LR"
+		}
+	}
+}
