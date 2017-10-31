@@ -2,10 +2,15 @@ Package contents
 ----------------
 src/
   node/
+    Source-code in coffeescript for nodelib.
+
+    .. figure:: assets/nodelib.svg
+       :alt: Internal Javascript dependencies in nodelib
+
+       All modules in nodelib.
+
     context.coffee
       A context object to hold properties and create sub-contexts.
-
-    .. image:: assets/nodelib-deps.svg
 
 test/
   jasmine/
@@ -39,3 +44,12 @@ package
 
 Sitefile.yaml
   - Metadata for documentation browser sitefile
+
+
+Project files inter-dependencies (javascript/css only):
+
+.. image:: assets/nodelib-dev.svg
+   :alt: javascript files in nodelib
+
+Would be interesting to have references in other domains: metadata,
+documentation, or grunt/gulp/make.

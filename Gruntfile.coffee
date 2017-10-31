@@ -1,16 +1,18 @@
 "use strict"
 
+load_grunt_tasks = require("load-grunt-tasks")
+
 module.exports = ( grunt ) ->
 
   # auto load grunt contrib tasks from package.json
-  require("load-grunt-tasks")(grunt)
+  load_grunt_tasks(grunt)
 
   grunt.initConfig
     watch:
       coffee:
         files: "src/node/*.coffee"
         tasks: [
-          "coffee:compile"
+          "coffee:lib"
           "exec:es2015_test"
           "mochaTest:test"
         ]
@@ -35,14 +37,37 @@ module.exports = ( grunt ) ->
       ###
 
     coffee:
-      compile:
+      lib:
         expand: true
         flatten: true
         cwd: "#{__dirname}/src/node/"
         src: [
            "*.coffee"
         ],
-        dest: "build/js/"
+        dest: "build/js/lib/src/node/"
+        ext: ".js"
+
+      dev:
+        expand: true
+        cwd: "#{__dirname}/"
+        src: [
+           "bin/*.coffee"
+           "src/node/*.coffee"
+           "*.coffee"
+           "test/example/core/*.coffee"
+           "test/mocha/*.coffee"
+        ],
+        dest: "build/js/lib-dev"
+        ext: ".js"
+
+      test:
+        expand: true
+        cwd: "#{__dirname}/"
+        src: [
+           "test/example/core/*.coffee"
+           "test/mocha/*.coffee"
+        ],
+        dest: "build/js/lib-test"
         ext: ".js"
 
     jshint:
@@ -93,44 +118,30 @@ module.exports = ( grunt ) ->
       tasks_update:
         cmd: "sh ./tools/tasks.sh"
 
-      nodelib_deps_svg:
-        cmd: "madge --image doc/assets/nodelib-deps.svg build/js/*.js"
+      nodelib_deps_g:
+        cmd: "make dep-g"
 
     pkg: grunt.file.readJSON "package.json"
 
 
   # Static analysis of source files
-  grunt.registerTask "lint", [
-    "coffeelint"
-    "jshint"
-    "yamllint"
-  ]
+  grunt.registerTask "lint", [ "coffeelint", "jshint", "yamllint" ]
 
-  grunt.registerTask "check", [
-    "exec:check_version"
-    "lint"
-  ]
+  # Test both source and compiled JS lib
+  grunt.registerTask "test", [ "mochaTest", "coffee:lib", "exec:es2015_test" ]
 
-  # Test both source and compiled JS
-  grunt.registerTask "test", [
-    "mochaTest"
-    "coffee:compile"
-    "exec:es2015_test"
-  ]
-
-  # Everything
-  grunt.registerTask "default", [
-    "lint"
-    "test"
-  ]
+	# Project pre-commit
+  grunt.registerTask "check", [ "exec:check_version", "lint" ]
+  grunt.registerTask "default", [ "lint", "test" ]
 
   # Documentation artefacts, some intial publishing
   grunt.registerTask "build", [
-    "coffee:compile"
+    "coffee:lib"
     "exec:gulp_dist_build"
-    "exec:nodelib_deps_svg"
+    "exec:nodelib_deps_g"
   ]
 
+	# Looking for better build and module config
   grunt.registerTask "x-build", [
     "build"
     "exec:spec_update"

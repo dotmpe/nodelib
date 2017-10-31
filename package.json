@@ -30,13 +30,9 @@
     "nodelib-specs": "./bin/specs.coffee"
   },
   "scripts": {
-
     "test": "grunt lint test",
-
     "build": "grunt build",
-
     "check": "grunt check",
-
     "update-spec": "sh ./tools/update-spec.sh",
     "mocha": "mocha --compilers coffee:coffee-script/register test/mocha/*.coffee",
     "mocha-test": "mocha --compilers coffee:coffee-script/register",
@@ -68,10 +64,11 @@
     "grunt-jasmine-node-coffee": "^0.1.4",
     "grunt-mocha-test": "^0.12.7",
     "grunt-yamllint": "0.2.0",
+    "gulp": "latest",
     "load-grunt-config": "latest",
     "load-grunt-tasks": "latest",
+    "madge": "^2.2.0",
     "mocha": "^2.2.5",
-    "webpack": "^1.13.3",
-    "gulp": "latest"
+    "webpack": "^1.13.3"
   }
 }

@@ -2,6 +2,8 @@ Nodelib
 =======
 :Version: 0.0.7-dev
 :Status: Development
+:Created: 2015-04-19
+:Updated: 2017-10-31
 :dependency status:
 
   .. image:: https://gemnasium.com/bvberkum/nodelib.png
@@ -20,9 +22,13 @@ Nodelib
     :target: http://badge.fury.io/gh/bvberkum%2Fnodelib
     :alt: GIT
 
+Small repo with assorted helpers for Node.JS projects.
 
 - `specs <specs.rst>`_
 - `dev notes <doc/dev.rst>`_
 - `context <doc/context.rst>`_
 - `package contents <doc/package.rst>`_
 
+This project generated dependency diagrams using `madge
+<https://github.com/pahen/madge>`_, based on
+`dependency-tree <https://github.com/pdependents/node-dependency-tree>`_.
