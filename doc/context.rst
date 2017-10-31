@@ -80,7 +80,7 @@ issue of interface/apater/type definition.
 
 And this also gets into component-framework land, where JS has I think some
 issues to resolve there before we can see some progress in the ecosphere.
-Cf. WebIDL.
+Cf. WebIDL. [#]_
 Mozilla had a nice framework called XPCOM as part of its initial open-source
 release. Way back when the web was still under 10 years old they had with it
 a way to interface JS with native C++ compiled components and evidently.
@@ -99,7 +99,8 @@ issues still in binding with C++.
 
 .. _slideshow: http://mcc.id.au/2013/lca-webidl/
 
-.. [#] https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Guide/Creating_components/Using_XPCOM_Components
+.. [#] <https://heycam.github.io/webidl/>
+.. [#] <https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Guide/Creating_components/Using_XPCOM_Components>
 
 
 Path transpose
@@ -119,7 +120,7 @@ More to the point, standardization is important. Even if clumsily done.
 And it should be encouraged always\ [#]_. But there's also a little flexibility
 needed if working with namespaces build into our language or environment.
 
-.. [#] https://news.ycombinator.com/item?id=3520132
+.. [#] <https://news.ycombinator.com/item?id=3520132>
 
 Part of it is addressed perhaps by using a default or current working context.
 And relative paths too.
