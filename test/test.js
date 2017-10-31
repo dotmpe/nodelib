@@ -2,7 +2,7 @@
 
 var assert = require('assert');
 
-var Context = require('../build/js/context');
+var Context = require('../build/js/lib/src/node/context');
 
 
 var ctx = new Context({'foo': 1});

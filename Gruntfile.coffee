@@ -130,7 +130,7 @@ module.exports = ( grunt ) ->
   # Test both source and compiled JS lib
   grunt.registerTask "test", [ "mochaTest", "coffee:lib", "exec:es2015_test" ]
 
-	# Project pre-commit
+  # Project pre-commit
   grunt.registerTask "check", [ "exec:check_version", "lint" ]
   grunt.registerTask "default", [ "lint", "test" ]
 
@@ -141,7 +141,7 @@ module.exports = ( grunt ) ->
     "exec:nodelib_deps_g"
   ]
 
-	# Looking for better build and module config
+  # Looking for better build and module config
   grunt.registerTask "x-build", [
     "build"
     "exec:spec_update"

@@ -228,14 +228,14 @@ describe '0.1.1 Nodelib context-module', ->
               x: [
                 el: 'baz'
               ]
-          expect( ctx.refs ).to.eql  x: [el:'baz']
-          expect( ctx.foo ).to.eql  bar: $ref:'#/refs/x'
-          expect( ctx.resolve 'foo.bar' ).to.eql  [el:'baz']
-          expect( ctx.resolve 'foo' ).to.eql  bar: [el:'baz']
-          expect( ctx.foo2 ).to.eql  $ref:'#/refs'
-          expect( ctx.resolve 'foo2' ).to.eql  x: [el:'baz']
-          expect( ctx.resolve 'foo2.x.0' ).to.eql  el:'baz'
-          expect( ctx.resolve 'foo2.x.0.el' ).to.eql  'baz'
+          expect( ctx.refs ).to.eql x: [el: 'baz']
+          expect( ctx.foo ).to.eql bar: $ref: '#/refs/x'
+          expect( ctx.resolve 'foo.bar' ).to.eql [el: 'baz']
+          expect( ctx.resolve 'foo' ).to.eql bar: [el: 'baz']
+          expect( ctx.foo2 ).to.eql $ref: '#/refs'
+          expect( ctx.resolve 'foo2' ).to.eql x: [el: 'baz']
+          expect( ctx.resolve 'foo2.x.0' ).to.eql el: 'baz'
+          expect( ctx.resolve 'foo2.x.0.el' ).to.eql 'baz'
 
 
       describe '0.1.1.2.1.3 which may contain paths as keys', ->
@@ -314,5 +314,3 @@ describe '0.1.1 Nodelib context-module', ->
 
   afterEach ->
     delete ctx
-
-
