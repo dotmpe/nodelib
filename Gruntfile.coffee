@@ -106,6 +106,7 @@ module.exports = ( grunt ) ->
     exec:
       check_version:
         cmd: "git-versioning check"
+
       es2015_test:
         cmd: "node --use_strict test/test.js"
       
@@ -134,10 +135,14 @@ module.exports = ( grunt ) ->
   grunt.registerTask "check", [ "exec:check_version", "lint" ]
   grunt.registerTask "default", [ "lint", "test" ]
 
-  # Documentation artefacts, some intial publishing
-  grunt.registerTask "build", [
+  # Build dist
+  grunt.registerTask "dist", [
     "coffee:lib"
     "exec:gulp_dist_build"
+  ]
+  # documentation artefacts, some intial publishing
+  grunt.registerTask "build", [
+    "dist"
     "exec:nodelib_deps_g"
   ]
 

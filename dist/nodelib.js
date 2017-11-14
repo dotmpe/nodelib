@@ -189,7 +189,7 @@ module.exports =
 	      extend(SubContext, superClass);
 	
 	      function SubContext(init, sup) {
-	        Context.call(this, init, sup);
+	        SubContext.__super__.constructor.call(this, init, sup);
 	      }
 	
 	      return SubContext;
@@ -334,7 +334,7 @@ module.exports =
 	          item = value[index];
 	          merge(value, item, index);
 	        }
-	      } else if (_.isPlainObject(value)) {
+	      } else if (_.isPlainObject(value) || value instanceof Context) {
 	        if ('$ref' in value) {
 	          value = mergeDeref(value);
 	        } else {

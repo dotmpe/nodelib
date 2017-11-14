@@ -27,7 +27,7 @@ mocha:
 test:: check mocha
 
 update:
-	./bin/cli-version.sh update
+	git-versioning update
 	npm update
 
 build:: TODO.list
@@ -38,19 +38,21 @@ TODO.list: Makefile bin/ lib/ src/ test/ tools/ ReadMe.rst reader.rst package.ya
 git-pre-commit::
 	@git-versioning check
 
-build/js/lib:
+build/js/lib: src
 	grunt coffee:lib
-build/js/lib-dev:
+build/js/lib-dev: src bin test
 	grunt coffee:dev
-build/js/lib-test:
+build/js/lib-test: test
 	grunt coffee:test
 
-doc/assets/node%-deps.dot: Rules.nodelib.mk build/js/% .madgerc graph
-	madge --include-npm --dot build/js/$* | \
-		sh ./graph build/js/$* "nodelib" > $@
+PRETTYG := ./tools/sh/prettify-madge-graph.sh
 
-doc/assets/node%.dot: Rules.nodelib.mk build/js/% .madgerc graph
-	madge --dot build/js/$* | sh ./graph build/js/$* > $@
+doc/assets/node%-deps.dot: Rules.nodelib.mk build/js/% .madgerc $(PRETTYG)
+	madge --include-npm --dot build/js/$* | \
+		$(PRETTYG) build/js/$* "nodelib" > $@
+
+doc/assets/node%.dot: Rules.nodelib.mk build/js/% .madgerc $(PRETTYG)
+	madge --dot build/js/$* | $(PRETTYG) build/js/$* > $@
 
 doc/assets/node%-deps.svg: doc/assets/node%-deps.dot Rules.nodelib.mk build/js/%
 	dot -Tsvg doc/assets/node$*-deps.dot \

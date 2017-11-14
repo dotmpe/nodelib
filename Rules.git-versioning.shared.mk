@@ -7,30 +7,30 @@ STRGT += \
    publish
 
 version:
-	@./bin/cli-version.sh version
+	@git-versioning version
 
 check:
 	@$(echo) -n "Checking for $(APP_ID) version "
-	@./bin/cli-version.sh check
+	@git-versioning check
 
 patch:
-	@./bin/cli-version.sh increment
+	@git-versioning increment
 
 release: maj := 
 release:
-	@./bin/cli-version.sh increment true $(maj)
+	@git-versioning increment true $(maj)
 
 tag:
-	@git tag $(APP_ID)/$$(./bin/cli-version.sh version)
-	@echo "New tag: $(APP_ID)/$$(./bin/cli-version.sh version)"
-	@./bin/cli-version.sh increment
+	@git tag $(APP_ID)/$$(git-versioning version)
+	@echo "New tag: $(APP_ID)/$$(git-versioning version)"
+	@git-versioning increment
 	@./tools/prep-version.sh
 
 
 # XXX: GIT publish
 publish: DRY := yes
 publish: check
-	@[ -z "$(VERSION)" ] && exit 1 || echo Publishing $(./bin/cli-version.sh version)
+	@[ -z "$(VERSION)" ] && exit 1 || echo Publishing $(git-versioning version)
 	git push
 	@if [ $(DRY) = 'no' ]; \
 	then \
@@ -41,5 +41,3 @@ publish: check
 	else \
 		echo "*DRY* $(VERSION)"; \
 	fi
-
-
