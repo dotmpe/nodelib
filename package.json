@@ -1,7 +1,7 @@
 {
   "name": "nodelib-mpe",
   "description": "Nodelib",
-  "version": "0.0.7-dev",
+  "version": "0.0.7",
   "homepage": "https://github.com/bvberkum/nodelib",
   "author": "B. van Berkum <dev@bvberkum.com>",
   "keywords": [
@@ -57,7 +57,7 @@
     "grunt": "^0.4.5",
     "grunt-cli": "^1.2.0",
     "grunt-coffeelint": "^0.0.16",
-    "grunt-contrib-coffee": "latest",
+    "grunt-contrib-coffee": "1.0.0",
     "grunt-contrib-jshint": "latest",
     "grunt-contrib-watch": "latest",
     "grunt-exec": "^1.0.0",

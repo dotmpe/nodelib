@@ -55,7 +55,7 @@ module.exports =
 
 	var version;
 	
-	version = "0.0.7-dev";
+	version = "0.0.7";
 	
 	module.exports = {
 	  Context: __webpack_require__(2),
@@ -189,7 +189,7 @@ module.exports =
 	      extend(SubContext, superClass);
 	
 	      function SubContext(init, sup) {
-	        Context.call(this, init, sup);
+	        SubContext.__super__.constructor.call(this, init, sup);
 	      }
 	
 	      return SubContext;

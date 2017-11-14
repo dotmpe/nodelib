@@ -79,7 +79,8 @@ class Context
   getSub: ( init ) ->
     class SubContext extends Context
       constructor: ( init, sup ) ->
-        Context.call @, init, sup
+        #Context.call @, init, sup
+        super(init, sup)
     sub = new SubContext init, @
     @_subs.push sub
     sub
