@@ -201,7 +201,7 @@ class Context
       if _.isArray value
         for item, index in value
           merge value, item, index
-      else if _.isPlainObject value
+      else if _.isPlainObject(value) or value instanceof Context
         if '$ref' of value
           value = mergeDeref value
         else
@@ -263,4 +263,3 @@ Context.reset()
 # XXX: not strict: Context.name = "context-mpe"
 
 module.exports = Context
-

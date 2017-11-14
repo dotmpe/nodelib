@@ -334,7 +334,7 @@ module.exports =
 	          item = value[index];
 	          merge(value, item, index);
 	        }
-	      } else if (_.isPlainObject(value)) {
+	      } else if (_.isPlainObject(value) || value instanceof Context) {
 	        if ('$ref' in value) {
 	          value = mergeDeref(value);
 	        } else {

@@ -1,14 +1,11 @@
 #!/usr/bin/env sitefile
-sitefile: 0.0.3-dev
+sitefile: 0.0.7-dev
 upstream: '*'
-packages: 
-  - 'sitefile/context.coffee'
-  - 'cors.coffee'
 
 routes:
   '': redir:index
   index: redir:ReadMe
-  _rst2html: rst2html:**/*.rst
+  _rst2html: docutils.rst2html:**/*.rst
 
 params:
   rst2html:
@@ -22,4 +19,3 @@ params:
       #- /srv/project-mpe/docutils-ext/var/media/style/docutils-html.css
       #- /srv/project-mpe/docutils-ext/var/media/style/docutils.css
       #- ~/htdocs/media/style/bvberkum-com/olddefault.css
-

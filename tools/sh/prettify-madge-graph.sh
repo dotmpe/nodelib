@@ -23,8 +23,8 @@ npm_alias()
 alias_path()
 {
   case "$1" in
-    src/node/* ) dir_alias "$2" "$1" 3 ;;
-    test/* ) dir_alias "$3" "$1" 2 ;;
+    src/node/* ) dir_alias "$3" "$1" 3 ;;
+    test/* ) dir_alias "$4" "$1" 2 ;;
     */node_modules/* ) npm_alias npm "$1" ;;
     #* ) echo "$(dirname "$1")/$(basename "$1" .js)" ;;
     * ) dir_alias "" "$1" 1 ;;
@@ -38,9 +38,9 @@ grep ';' |
  while read node arc node2
 do
   test -n "$arc" && {
-    printf -- "\"$(alias_path "$node")\" $arc \"$(alias_path "$node2")\";\n"
+    printf -- "\"$(alias_path "$node" "$@")\" $arc \"$(alias_path "$node2" "$@")\";\n"
   } || {
-    printf -- "\"$(alias_path "$node")\";\n"
+    printf -- "\"$(alias_path "$node" "$@")\";\n"
   }
 done
 

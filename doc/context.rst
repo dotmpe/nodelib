@@ -151,6 +151,67 @@ Leaving aside the choice of OS, can't we not say something more meaningful and
 informative though about our work instead of having to say, 'here is my bunch
 of files'?
 
+More thoughts on namespacing in JavaScript
+------------------------------------------
+Namespacing in javascript is a particulary interesting problem since the
+language itself is setup very generic, and does not even offer much of a module
+system. [*]_
+
+We get a global scope for our variables, with functions being first class
+objects sharing the same namespace. And on top a simple syntax for list and
+dictionary style of complex types (called arrays and objects). And a
+prototype-style inheritance system, where the keyword 'new' to me seems to me to
+be equivalent to saying: create a new object and make it inherit from the object
+(a 'class') I'm passing in. Plus do some constructor fancyness. Not much else.
+
+Summarizing three subsequent forms\ [#]_ of namespacing in JS:
+
+- a global prefix to globalize every app 'root' var name.
+- one global var, to contain all app vars. (single object ns)
+- multiple globals, grouping vars per vendor/function/lib.. (nested object ns)
+
+The main concerns:
+
+- prevent collisions
+- reduce lookup overhead
+
+I never considered the overhead of ``my.lib`` vs ``my_lib``. It should be
+all hash-table lookup anyway. Also not cramming all names into the global
+hash-table would seem to me to be a benefit. Global lookups take shorter times,
+and I guess developers can improve runtime by aliasing as early as possible.
+
+But it again goes to show that in some context, flexible namespace tooling to
+map instances of prefix or object namespaces. E.g. to remove nesting during
+code compilation to optimize the runtime.
+
+Inversion of Control
+--------------------
+Context easily lends itself to get too crammbed. And it needs some help with
+lazy loading. Require.JS could fill part of the job.
+
+Comparing with Symfony's container\ [#]_, since someone made a port for that\ [#]_:
+
+- constructor, setter and property injection
+- explicit control by API, or through XML or YAML metadata
+- metadata has reference formats, and parameter overrides and multiple env or profile handling,
+
+Basicly, it provides a lot of help properly parameterizing the service instances
+delivered by the container.
+
+.. [#] <http://symfony.com/doc/current/service_container.html>
+.. [#] <https://github.com/linkshare/service-container>
+
+
 Conclusion
 ----------
+JSON is a fine transport format, filesystems are an OK way for virtual storage.
+They share similarities, being trees. And these offer a seductive image of
+organisation, of order. But its not going to help Context if some tight layer
+of either is integrated into its core code.
 
+
+
+.. [#] <http://peter.michaux.ca/articles/javascript-namespacing>
+
+.. [*] Which gave rise to AMD and CommonJS, not to mention some other variants.
+       Which is not
