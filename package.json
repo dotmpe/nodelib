@@ -1,7 +1,7 @@
 {
   "name": "nodelib-mpe",
   "description": "Nodelib",
-  "version": "0.0.7",
+  "version": "0.0.8-dev",
   "homepage": "https://github.com/bvberkum/nodelib",
   "author": "B. van Berkum <dev@bvberkum.com>",
   "keywords": [

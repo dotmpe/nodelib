@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.7 test/mocha/module.coffee
+# Id: nodelib/0.0.8-dev test/mocha/module.coffee
 
 module = require '../../src/node/module'
 chai = require 'chai'

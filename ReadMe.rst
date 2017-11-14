@@ -1,8 +1,8 @@
 Nodelib
 =======
-:Version: 0.0.7
+:Version: 0.0.8-dev
 :Created: 2015-04-19
-:Updated: 2017-10-31
+:Updated: 2017-11-14
 :dependency status:
 
   .. image:: https://gemnasium.com/bvberkum/nodelib.png
