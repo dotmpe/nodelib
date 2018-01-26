@@ -29,6 +29,7 @@ class Context
   ###
 
   constructor: ( init, ctx=null ) ->
+    @class = Context
     @_instance = ++ Context._i
     # Provide path to super context
     @context = ctx
@@ -46,6 +47,11 @@ class Context
   toString: -> 'Context:' + @id()
   isEmpty: -> _.isEmpty @_data and if @context then @context.isEmpty() else true
   subs: -> @_subs # List subcontexts
+  root: ->
+    ctx = @
+    while ctx.context
+      ctx = ctx.context
+    ctx
 
   # Seed property data from obj
   seed: ( obj ) ->
@@ -77,11 +83,8 @@ class Context
 
   # new subcontext, inherits current instance, optional new or override vars
   getSub: ( init ) ->
-    class SubContext extends Context
-      constructor: ( init, sup ) ->
-        #Context.call @, init, sup
-        super(init, sup)
-    sub = new SubContext init, @
+    Sub = class extends @class
+    sub = new Sub init, @
     @_subs.push sub
     sub
 
@@ -209,7 +212,8 @@ class Context
           for key2, value2 of value
             merge value, value2, key2
 
-      else if _.isString( value ) or _.isNumber( value ) or _.isBoolean( value )
+      else if value == null or _.isString( value ) or _.isNumber( value ) \
+          or _.isBoolean( value ) or _.isFunction( value )
         null
 
       else

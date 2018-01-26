@@ -55,7 +55,7 @@ module.exports =
 
 	var version;
 	
-	version = "0.0.7";
+	version = "0.0.8-dev";
 	
 	module.exports = {
 	  Context: __webpack_require__(2),
@@ -110,6 +110,7 @@ module.exports =
 	    if (ctx == null) {
 	      ctx = null;
 	    }
+	    this["class"] = Context;
 	    this._instance = ++Context._i;
 	    this.context = ctx;
 	    this._data = {};
@@ -138,6 +139,15 @@ module.exports =
 	
 	  Context.prototype.subs = function() {
 	    return this._subs;
+	  };
+	
+	  Context.prototype.root = function() {
+	    var ctx;
+	    ctx = this;
+	    while (ctx.context) {
+	      ctx = ctx.context;
+	    }
+	    return ctx;
 	  };
 	
 	  Context.prototype.seed = function(obj) {
@@ -184,18 +194,18 @@ module.exports =
 	  };
 	
 	  Context.prototype.getSub = function(init) {
-	    var SubContext, sub;
-	    SubContext = (function(superClass) {
-	      extend(SubContext, superClass);
+	    var Sub, sub;
+	    Sub = (function(superClass) {
+	      extend(_Class, superClass);
 	
-	      function SubContext(init, sup) {
-	        SubContext.__super__.constructor.call(this, init, sup);
+	      function _Class() {
+	        return _Class.__super__.constructor.apply(this, arguments);
 	      }
 	
-	      return SubContext;
+	      return _Class;
 	
-	    })(Context);
-	    sub = new SubContext(init, this);
+	    })(this["class"]);
+	    sub = new Sub(init, this);
 	    this._subs.push(sub);
 	    return sub;
 	  };
@@ -343,7 +353,7 @@ module.exports =
 	            merge(value, value2, key2);
 	          }
 	        }
-	      } else if (_.isString(value) || _.isNumber(value) || _.isBoolean(value)) {
+	      } else if (value === null || _.isString(value) || _.isNumber(value) || _.isBoolean(value) || _.isFunction(value)) {
 	        null;
 	      } else {
 	        throw new Error("Unhandled value '" + value + "'");
