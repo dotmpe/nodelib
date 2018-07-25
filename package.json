@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "js-yaml": "^3.2.7",
-    "lodash": "^3.7.0",
+    "lodash": "^4.17.5",
     "node-uuid": "^1.4.3",
     "source-map-support": "^0.4.10"
   },
