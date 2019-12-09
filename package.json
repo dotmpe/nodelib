@@ -69,6 +69,6 @@
     "load-grunt-tasks": "latest",
     "madge": "^2.2.0",
     "mocha": "^2.2.5",
-    "webpack": "^1.13.3"
+    "webpack": "^4.41.2"
   }
 }
