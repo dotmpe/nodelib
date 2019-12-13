@@ -1,6 +1,6 @@
-# Id: nodelib/0.0.8-dev src/node/index.coffee
+# Id: nodelib/0.0.8 src/node/index.coffee
 
-version = "0.0.8-dev" # nodelib
+version = "0.0.8" # nodelib
 
 
 module.exports =
@@ -12,4 +12,4 @@ module.exports =
   util: require './util'
   version: version
 
-
+#

@@ -1,6 +1,6 @@
 Nodelib
 =======
-:Version: 0.0.8-dev
+:Version: 0.0.8
 :Created: 2015-04-19
 :Updated: 2017-11-14
 :dependency status:

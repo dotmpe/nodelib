@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.8-dev test/mocha/module.coffee
+# Id: nodelib/0.0.8 test/mocha/module.coffee
 
 module = require '../../src/node/module'
 chai = require 'chai'
@@ -101,4 +101,4 @@ describe "Module 'nodelib.module' provides classes and routines to set up
       # FIXME: euhm.. build or find interrupt mechanism and start this in a
       #        coroutine core.start()
 
-
+#
