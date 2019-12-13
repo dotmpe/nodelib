@@ -17,7 +17,7 @@ describe "Module 'nodelib.module' provides classes and routines to set up
 
       it 'which is a prototype for an object', ->
         obj = new module.classes.Core {}
-        obj.should.be.an.object
+        obj.should.be.an 'object'
 
 
       describe 'that can statically configure itself,', ->
@@ -63,23 +63,23 @@ describe "Module 'nodelib.module' provides classes and routines to set up
     it "it requires to load a core component from a module", ->
       module.init process.cwd()
       core = module.load_core 'test/example/core'
-      expect( core ).to.be.an.object
-      expect( core.app ).to.be.a('undefined').and.to.be.empty
-      expect( core.server ).to.be.a('undefined').and.to.be.empty
-      expect( core.root ).to.be.a('undefined').and.to.be.empty
-      expect( core.pkg ).to.be.a('undefined').and.to.be.empty
-      expect( core.config ).to.be.a('undefined').and.to.be.empty
-      expect( core.meta ).to.be.a('undefined').and.to.be.empty
-      expect( core.url ).to.be.a('undefined').and.to.be.empty
-      expect( core.path ).to.be.a('undefined').and.to.be.empty
-      expect( core.route ).to.be.a('object').and.to.be.empty
-      expect( core.base ).to.be.a('object').and.to.be.empty
-      expect( core.controllers ).to.be.a('object').and.to.be.empty
-      expect( core.routes ).to.be.a('object').and.to.be.empty
-      expect( core.models ).to.be.a('object').and.to.be.empty
-      expect( core.params ).to.be.a('object').and.to.be.empty
+      expect( core ).to.be.an 'object'
+      expect( core.app ).to.be.an 'undefined'
+      expect( core.server ).to.be.an 'undefined'
+      expect( core.root ).to.be.an 'undefined'
+      expect( core.pkg ).to.be.an 'undefined'
+      expect( core.config ).to.be.an 'undefined'
+      expect( core.meta ).to.be.an 'undefined'
+      expect( core.url ).to.be.an 'undefined'
+      expect( core.path ).to.be.an 'undefined'
+      expect( core.route ).to.be.an('object').that.is.empty
+      expect( core.base ).to.be.an('object').that.is.empty
+      expect( core.controllers ).to.be.an('object').that.is.empty
+      expect( core.routes ).to.be.an('object').that.is.empty
+      expect( core.models ).to.be.an('object').that.is.empty
+      expect( core.params ).to.be.an('object').that.is.empty
       expect( core.name ).to.be.string 'core'
-      expect( core.meta ).to.be.an.object
+      expect( core.meta ).to.be.an 'undefined'
 
 
     it "TODO: it requires a call to configure the core component", ->

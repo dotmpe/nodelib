@@ -97,7 +97,7 @@ module.exports = ( grunt ) ->
       test:
         options:
           reporter: "spec"
-          require: "coffee-script/register"
+          require: "coffeescript/register"
           captureFile: "mocha.out"
           quiet: false
           clearRequireCache: false # do explicitly as needed

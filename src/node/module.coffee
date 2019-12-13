@@ -10,7 +10,7 @@
 path = require 'path'
 
 _ = require 'lodash'
-uuid = require 'node-uuid'
+uuid = require 'uuid'
 
 metadata = require './metadata'
 applyRoutes = require('./route').applyRoutes
@@ -175,7 +175,7 @@ class CoreV01 extends Core
       res.locals.modules = []
       next()
 
-    super
+    super() # BUG: must add parenthesis? ... new after 1.12.2 to 2.4.1 upgrade
 
   ###
     CoreV01.load_modules
@@ -245,10 +245,10 @@ class ModuleV01 extends Component
 
   # Get new instance holding module metadata and config.
   constructor: ( opts ) ->
-    {@core} = opts
     if !opts.name
       opts.name = 'ModuleV01'
     super opts
+    {@core} = opts
 
   # Static
 
