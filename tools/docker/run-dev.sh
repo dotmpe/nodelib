@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Run from project root to get NPM dev env for testing
+# Run from project root to get NPM dev env
 
 hostname=$(hostname -f)
 docker run -ti --rm \

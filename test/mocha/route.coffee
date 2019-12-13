@@ -1,4 +1,4 @@
-# Id: nodelib/0.0.8-dev test/mocha/route.coffee
+# Id: nodelib/0.0.8 test/mocha/route.coffee
 
 ###
 
@@ -55,4 +55,4 @@ describe "Module 'route'", ->
     it "It can take names of handlers for singleton controllers"
     it "It can take dynamic references to handlers"
 
-
+#

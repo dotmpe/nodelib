@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Tests.
+# Install deps from NPM
 
 hostname=$(hostname -f)
 docker run -ti --rm \
