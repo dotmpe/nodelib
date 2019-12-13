@@ -1,6 +1,6 @@
-# Id: nodelib/0.0.8 src/node/index.coffee
+# Id: nodelib/0.0.9-dev src/node/index.coffee
 
-version = "0.0.8" # nodelib
+version = "0.0.9-dev" # nodelib
 
 
 module.exports =

@@ -1,24 +1,24 @@
 Nodelib
 =======
-:Version: 0.0.8
+:Version: 0.0.9-dev
 :Created: 2015-04-19
-:Updated: 2017-11-14
+:Updated: 2019-12-13
 :dependency status:
 
-  .. image:: https://gemnasium.com/bvberkum/nodelib.png
-     :target: https://gemnasium.com/bvberkum/nodelib
+  .. image:: https://gemnasium.com/dotmpe/nodelib.png
+     :target: https://gemnasium.com/dotmpe/nodelib
      :alt: Dependencies
 
 :build status:
 
-  .. image:: https://secure.travis-ci.org/bvberkum/nodelib.png
-    :target: https://travis-ci.org/bvberkum/nodelib
+  .. image:: https://secure.travis-ci.org/dotmpe/nodelib.png
+    :target: https://travis-ci.org/dotmpe/nodelib
     :alt: Build
 
 :latest version:
 
-  .. image:: https://badge.fury.io/gh/bvberkum%2Fnodelib.png
-    :target: http://badge.fury.io/gh/bvberkum%2Fnodelib
+  .. image:: https://badge.fury.io/gh/dotmpe%2Fnodelib.png
+    :target: http://badge.fury.io/gh/dotmpe%2Fnodelib
     :alt: GIT
 
 Small repo with assorted helpers for Node.JS projects.
