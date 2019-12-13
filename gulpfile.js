@@ -15,6 +15,7 @@ fs.readdirSync('node_modules')
 var config = {
   entry: [ './src/node/index.coffee' ],
   target: 'node',
+  mode: 'production',
   output: {
     path: path.join(__dirname, 'dist'),
     library: "nodelib",
@@ -22,21 +23,21 @@ var config = {
     filename: 'nodelib.js'
   },
   module: {
-    loaders: [
-      { test: /\.js$/, exclude: /node_modules/, loaders: ['babel'] },
-			{ test: /\.coffee$/, loader: "coffee" },
+    rules: [
+      { test: /\.js$/, exclude: /node_modules/, use: { loader: 'babel-loader' } },
+      { test: /\.coffee$/, use: { loader: "coffee-loader" } },
     ]
   },
   externals: nodeModules,
   plugins: [
-    new webpack.BannerPlugin('require("source-map-support").install();',
-                             { raw: true, entryOnly: false })
+    new webpack.BannerPlugin({ banner: 'require("source-map-support").install();',
+                               raw: true, entryOnly: false })
   ],
-	resolve: {
-		extensions: [
-			"", ".coffee", ".js"
-		]
-	},
+  resolve: {
+    extensions: [
+      ".coffee", ".js"
+    ]
+  },
   devtool: 'sourcemap',
 };
 
@@ -52,4 +53,4 @@ gulp.task('dist-build', function(done) {
   });
 });
 
-gulp.task('default', [ 'dist-build' ]);
+gulp.task('default', gulp.series([ 'dist-build' ]));
