@@ -1,6 +1,6 @@
 # Id: nodelib/0.0.8 Rules.nodelib.mk
 
-include $(DIR)/Rules.git-versioning.shared.mk
+include $(DIR)/Rules.*.shared.mk
 
 # special rule targets
 STRGT += \
