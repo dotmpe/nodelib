@@ -12,10 +12,15 @@ $(BASH_ENV): $(SELF)
 		" . \"\$${U_C}/script/stdlog-uc.lib.sh\" &&\n"\
 		" . \"\$${US_BIN:=\$$HOME/bin}/tools/sh/parts/als-git.sh\"" >| "$@"
 
-TRGT+=.meta/stat/index/$(APP_ID)-branches.list
+TRGT += .meta/stat/index/$(APP_ID)-branches.list
 .meta/stat/index/$(APP_ID)-branches.list:
 	mkdir -vp "${@D}"
 	vc.sh branches l origin >| "$@"
+
+TRGT += .meta/stat/index/$(APP_ID)-stats,commits,year-histogram.txt
+.meta/stat/index/$(APP_ID)-stats,commits,year-histogram.txt:
+	mkdir -vp "${@D}"
+	git-quick-stats -Y >| "$@"
 
 sync: build
 	git-fetch-v --all && git-pull-every
