@@ -1,10 +1,8 @@
-	
 SELF = ./Rules.project.shared.mk
-
 SHELL := $(shell which bash)
 export BASH_ENV := .meta/cache/bash-env.sh
-TRGT += $(BASH_ENV)
 
+TRGT += $(BASH_ENV)
 $(BASH_ENV): BASH_ENV=
 $(BASH_ENV): $(SELF)
 	mkdir -vp "${@D}"
@@ -21,6 +19,9 @@ TRGT += .meta/stat/index/$(APP_ID)-stats,commits,year-histogram.txt
 .meta/stat/index/$(APP_ID)-stats,commits,year-histogram.txt:
 	mkdir -vp "${@D}"
 	git-quick-stats -Y >| "$@"
+
+
+STRGT += build sync
 
 sync: build
 	git-fetch-v --all && git-pull-every
