@@ -1,12 +1,57 @@
-lib//git-versioning.sh:  # XXX Expect rSt MAIN_DOC
-src//node/context.coffee:    # XXX this starts top-down, but forgets context. may need to globalize
-src//node/metadata.coffee:# TODO: metafile should support various directory formats
-src//node/module.coffee:    # FIXME
-src//node/module.coffee:  | XXX what to use for models?
-src//node/module.coffee:    # TODO sync with Module.load:
-src//node/route.coffee:# XXX Init one-off controller instance to handle str-spec callback..
-tools//post-commit-old.sh:# FIXME
-tools//pre-commit.sh:# FIXME source $V_TOP_PATH/lib/git-versioning.sh
-tools//pre-commit.sh:# XXX again rSt hardcoded
-tools//version-check.sh:  # XXX: should want to know if any mismatches, regardless wether one matches
-ReadMe.rst:      FIXME: if triggered, need a trigger
+//lib/cryptsetup/cryptdisks-functions:    CRYPTTAB_NAME="${CRYPTTAB_NAME}_unformatted" # XXX potential conflict
+//lib/systemd/system/snapd.autoimport.service:# TODO:UC20: only enable this in run mode?
+//lib/udev/hwdb.d/70-pointingstick.hwdb:#      evdev:input:bZZZZvYYYYpXXXXeWWWW-VVVV
+//lib/udev/hwdb.d/70-pointingstick.hwdb:#    ZZZZ is the bus-id (see /usr/include/linux/input.h BUS_*), YYYY, XXXX and
+//lib/udev/hwdb.d/60-sensor.hwdb:#   udevadm trigger -v -p DEVNAME=/dev/iio:deviceXXX
+//lib/udev/hwdb.d/60-sensor.hwdb:# where /dev/iio:deviceXXX is the device in question.
+//lib/udev/hwdb.d/60-keyboard.hwdb:#      evdev:input:bZZZZvYYYYpXXXXeWWWW-VVVV
+//lib/udev/hwdb.d/60-keyboard.hwdb:#    ZZZZ is the bus-id (see /usr/include/linux/input.h BUS_*), YYYY, XXXX and
+//lib/udev/hwdb.d/60-keyboard.hwdb: KEYBOARD_KEY_67=f24                                    # FIXME: rotate screen
+//lib/udev/hwdb.d/60-keyboard.hwdb: KEYBOARD_KEY_6c=screenlock                             # FIXME: lock tablet device/buttons
+//lib/udev/hwdb.d/60-keyboard.hwdb: KEYBOARD_KEY_93=unknown                                # FIXME Fn+Left Auto Brightness
+//lib/udev/hwdb.d/60-keyboard.hwdb: KEYBOARD_KEY_98=f21                                    # FIXME: Tablet screen rotation
+//lib/udev/hwdb.d/60-keyboard.hwdb: KEYBOARD_KEY_d8=screenlock                             # FIXME: Tablet lock button
+//lib/udev/hwdb.d/60-keyboard.hwdb: KEYBOARD_KEY_f4=f21                                    # FIXME: silent-mode decrease CPU/GPU clock
+//lib/udev/hwdb.d/60-keyboard.hwdb: KEYBOARD_KEY_b3=unknown                                # FIXME: Auto brightness
+//lib/udev/hwdb.d/60-keyboard.hwdb: KEYBOARD_KEY_88=media                                  # FIXME: quick play
+//lib/udev/hwdb.d/60-keyboard.hwdb: KEYBOARD_KEY_c2=media                                  # FIXME: quick play
+//lib/udev/hwdb.d/20-pci-vendor-model.hwdb: ID_MODEL_FROM_DATABASE=C4XXX Series QAT Virtual Function
+//lib/udev/hwdb.d/30-pci-intel-gpu.hwdb: SWITCHEROO_CONTROL_PRODUCT_NAME=HD Graphics XXX (Braswell)
+//lib/udev/rules.d/69-lvm-metad.rules:# XXX: Properly call blkid on md devices. Workaround for #793631
+//lib/udev/rules.d/01-md-raid-creating.rules:# /run/mdadm/creating-mdXXX.  If that file exists, then
+//lib/udev/rules.d/80-udisks2.rules:# TODO: file bug against mdadm(8) to have --export-prefix option that can be used with e.g. UDISKS_MD_MEMBER
+//lib/udev/rules.d/80-udisks2.rules:# TODO: figure out if the drive supports SD, SDHC or SDXC and what the current
+//lib/udev/rules.d/80-udisks2.rules:# TODO: maybe automatically convert udisks1 properties to udisks2 ones?
+//lib/udev/rules.d/80-udisks2.rules:# TODO: figure out where to store this database
+//lib/ufw/ufw-init:# FIXME: this shouldn't be ordered
+//lib/recovery-mode/options/grub:# FIXME: add this too? how to find out boot device?
+//lib/apparmor/rc.apparmor.functions:		# FIXME: once the parser properly handles broken profiles
+//lib/init/init-d-script:	# FIXME: Does it make sense to call `status_of_proc' if PIDFILE is
+src/node/mocha-specs.coffee:      # XXX: need two lines to print list attr, iow. add start_it method
+src/node/metadata.coffee:# TODO: metafile should support various directory formats
+src/node/route.coffee:# XXX Init one-off controller instance to handle str-spec callback..
+src/node/module.coffee:    console.log "TODO component.configure", [
+src/node/module.coffee:    # FIXME Component.load_models
+src/node/module.coffee:  | XXX what to use for models?
+src/node/module.coffee:    # XXX sync with module.load
+src/node/context.coffee:    # XXX unused @_defaults = init
+src/node/context.coffee:    # XXX: re-create all properties from context, needed?
+src/node/context.coffee:  # XXX drop $ref from return value
+src/node/context.coffee:    # XXX this starts top-down, but forgets context. may need to globalize
+src/node/context.coffee:# XXX: not strict: Context.name = "context-mpe"
+test/mocha/route.coffee:    it "XXX take an express, urlBase, mock arg, and return an merged route", ->
+test/mocha/module.coffee:    it "it requires a global init. FIXME: fix this somehow. ", ->
+test/mocha/module.coffee:    it "TODO: it requires a call to configure the core component", ->
+test/mocha/module.coffee:    it "TODO: it can load extensions. ", ->
+test/mocha/module.coffee:    it "TODO: it finally has a function to start the Express app. ", ->
+test/mocha/module.coffee:      # FIXME: euhm.. build or find interrupt mechanism and start this in a
+tools/sh/tags-filter.sh:  | grep -v '\<TODO\>\.\<txt\>' \
+tools/sh/tags-filter.sh:  | grep -v '\<TODO\>\.\<list\>' \
+tools/tags.sh:  test -n "$abort_on_regex" || abort_on_regex='TODO\|FIXME\|XXX\|NOTE' # tasks:no-check
+tools/tags.sh:  test -n "$abort_on_regex" || abort_on_regex='\<XXX\>' # tasks:no-check
+tools/tags.sh:# TODO: should move script into pd or lst, once excludes are loaded
+tools/docker/run-dist.sh:# TODO: set source-embedded versions?
+package.yaml:      document: TODO.txt
+package.yaml:        - TODO # tasks:no-check
+package.yaml:        - XXX # tasks:no-check
+package.yaml:        - FIXME # tasks:no-check

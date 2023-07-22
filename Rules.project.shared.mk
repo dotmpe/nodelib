@@ -2,7 +2,7 @@ SELF = ./Rules.project.shared.mk
 SHELL := $(shell which bash)
 export BASH_ENV := .meta/cache/bash-env.sh
 
-TRGT += $(BASH_ENV)
+DEP += $(BASH_ENV)
 $(BASH_ENV): BASH_ENV=
 $(BASH_ENV): $(SELF)
 	mkdir -vp "${@D}"
