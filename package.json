@@ -43,7 +43,7 @@
     "dep-local-all": "find node_modules/ -iname node_modules | xargs /bin/ls -w1 | grep -v '^$' | grep -v 'node_modules' | sort -u | awk '{print $1}'"
   },
   "dependencies": {
-    "js-yaml": "^3.13.1",
+    "js-yaml": "^4.1.1",
     "lodash": "^4.17.15",
     "uuid": "^3.3.3",
     "source-map-support": "^0.5.16"
